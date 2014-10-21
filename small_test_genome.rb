@@ -3,7 +3,7 @@ require_relative 'lib/model_genome'
 require_relative 'lib/write_it'
 
 # make the directory to put data files into
-Dir.mkdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{ARGV[0]}"))
+Dir.mkdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{ARGV[0]}"))
 
 # Create the lists of homozygous and heterozygous SNPs
 hm_r = 'hm <- rnorm(50, 1000, 100)' # Causative SNP at/near 1000

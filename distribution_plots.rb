@@ -13,7 +13,7 @@ genome_length = ReformRatio::genome_length("arabidopsis_datasets/#{dataset}/frag
 
 hm, ht, hyp, ylim_hm, ylim_ht, ylim_hyp = [],[],[],[],[],[]
 
-Dir.chdir(File.join(Dir.home, "fragmented_genome_with_snps/arabidopsis_datasets/#{dataset}")) do
+Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset}")) do
 	
 	hom_snps = WriteIt.file_to_ints_array("hm_snps.txt")
 	hm << hom_snps

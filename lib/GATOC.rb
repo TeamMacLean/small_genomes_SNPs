@@ -174,7 +174,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			:s_mut => 40, # Integer of the desired number of swap mutant permutations in each new population
 			:save => 8, # Integer of the desired number of the best permutations from each population, to be included in the next one
 			:ran => 2, # Integer of the desired number of randomly shuffled permutations in each new population
-			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets', # Location to save output files to
+			:loc => '~/small_genomes_SNPs/arabidopsis_datasets', # Location to save output files to
 			:dataset => ARGV[0], # The sub folder containing fasta and vcf files
 			:run => ARGV[1], # The name you'd like to assign this run of the algorithm
 			:start_pop => nil, # Population array of permutations (arrays of FASTA format fragments) to start from - THIS IS USEFUL WHILST TESTING ALGORITHM

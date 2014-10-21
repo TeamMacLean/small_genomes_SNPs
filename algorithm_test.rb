@@ -22,7 +22,7 @@ ran = ARGV[9].to_i # Number of random permutations in each generation
 ## Files ################################################
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
 fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
-location = 'fragmented_genome_with_snps/arabidopsis_datasets'
+location = 'small_genomes_SNPs/arabidopsis_datasets'
 #############################################################
 
 
