@@ -62,5 +62,5 @@ For small genomes like the ones shown in here (2 and 8 kb), for [the conditions 
 
 - Try with a larger genome?
 - Increase the number of generations? 
-- Try with new parameters. I could increase the select_num (number of permutations generated in each population). Increasing the number of permutations, we will have  more likely  a best_permutation per generation with a better fitness score. 
+- Try with new parameters. I could increase the select_num (number of permutations generated in each population). By increasing the number of permutations, we will have a best_permutation per generation with a better fitness score. 
 - Use the count_ratio method
