@@ -53,14 +53,11 @@ As stated in the 2kb-genome, the distribution approches to the model distributio
 
 ![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/arabidopsis_datasets/dataset_small8kb/snp_distance_150gen/images_hyp.gif?raw=true)
 
-### Conclusion for the ratio hm/ht SNP density plot
-
-For small genomes like the ones shown in here (2 and 8 kb), for [the conditions used](https://github.com/pilarcormo/Lab_book_TSL/blob/master/14.10.14.md) and the fitness methods employed, the distribution plots for the ratio homozygous to heterozygous are different for each generation. 
 
 
 ### Possible improvements I can think of
 
 - Try with a larger genome?
 - Increase the number of generations? 
-- Try with new parameters. I could increase the select_num (number of permutations generated in each population). By increasing the number of permutations, we will have a best_permutation per generation with a better fitness score. 
+- Try with new parameters. I could increase the select_num (number of permutations generated in each population). By increasing the number of permutations, we will probably have a best_permutation per generation with a better fitness score. 
 - Use the count_ratio method
