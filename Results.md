@@ -59,5 +59,5 @@ As stated in the 2kb-genome, the distribution approches to the model distributio
 
 - The increase in the genome size (2-->8 kb) doesn't seem to improve the accuracy of the distribution plots.
 - Increase the number of generations? 
-- Try with new parameters.  By increasing the number of permutations, we will probably have a best_permutation per generation with a **better fitness score.**. I could increase the select_num (number of permutations from each population to create a new population from. Also, I could increase the population size (numnber of permutations in each population)
+- Try with [new parameters](https://github.com/pilarcormo/Lab_book_TSL/blob/master/October%202014/22.10.14.md).  By increasing the number of permutations, we will probably have a best_permutation per generation with a **better fitness score.**. I could increase the select_num (number of permutations from each population to create a new population from. Also, I could increase the population size (numnber of permutations in each population)
 - Use the count_ratio method
