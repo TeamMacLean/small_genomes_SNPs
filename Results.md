@@ -4,7 +4,7 @@ Generating plots for the 2 kb genome
 -------
 ### 1. Maximum density method
 
-The **Homozygous SNP density obtained by the maximum density method** is not really accurate. Every generation, the distribution changes a lot. As the number of generations increases, the main peak is moving to the left and at the end, it is out of place. Also, in some cases, alternative peaks appear. 
+The **Homozygous SNP density obtained by the maximum density method** is not really accurate. Every generation, the distribution changes a lot. As the number of generations increases, the main peak is moving to the left and at the end, it is completely out of place. Also, in some cases, alternative peaks appear. Also, the peak is much  
 
 In the **ratio hm/ht SNP density plot**, the distribution also changes a lot each generation, without following any useful trend. 
 
@@ -57,7 +57,7 @@ As stated in the 2kb-genome, the distribution approches to the model distributio
 
 ### Possible improvements I can think of
 
-- Try with a larger genome?
+- The increase in the genome size (2-->8 kb) doesn't seem to improve the accuracy of the distribution plots.
 - Increase the number of generations? 
-- Try with new parameters. I could increase the select_num (number of permutations generated in each population). By increasing the number of permutations, we will probably have a best_permutation per generation with a better fitness score. 
+- Try with new parameters.  By increasing the number of permutations, we will probably have a best_permutation per generation with a **better fitness score.**. I could increase the select_num (number of permutations from each population to create a new population from. Also, I could increase the population size (numnber of permutations in each population)
 - Use the count_ratio method
