@@ -1,5 +1,6 @@
 #encoding: utf-8
 class GATOC # Genetic Algorithm To Order Contigs
+	require 'pp'
 	require_relative 'fitness_score'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
@@ -142,6 +143,14 @@ class GATOC # Genetic Algorithm To Order Contigs
 		end
 	end
 
+	def self.pilar(fitness, gen)
+		CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/table.csv", "wb") do |csv|
+  			csv << "blabla"
+  			csv << "blabla"
+		end
+	end
+
+
 	# Input: Array of number values
 	# Output: The area under the curve for the input array plotted against 1..input_length
 	def self.quit(fitness_scores)
@@ -208,6 +217,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types) # save the permutations from this generation, with fitness scores
+				pilar(initial_pf, gen)
 			end
 
 			puts "Gen#{gen}\n Fitness Score = #{pop_fits[-1][0]}" # print output to show improvement of best permutation over generations as algorithm runs

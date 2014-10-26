@@ -13,7 +13,7 @@ puts "To create the model genome I'm using TAIR10_chr4.fasta"
 
 # Create the lists of homozygous and heterozygous SNPs
 hm_r = 'hm <- rnorm(50, 1000, 100)' # Causative SNP at/near 1000
-ht_r = 'ht <- runif(50, 1, 8000)'   # Genome length of 2000
+ht_r = 'ht <- runif(50, 1, 2000)'   # Genome length of 2000
 hm, ht = ModelGenome::get_snps(hm_r, ht_r)
 snp_pos = [hm, ht].flatten
 
