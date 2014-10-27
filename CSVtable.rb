@@ -33,7 +33,7 @@ Array(1..gen.to_i).each do |i|
 	f = File.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{subdir}/Gen#{i}/best_permutation.txt") 
 		f.pos = 1
 		q = f.gets
-		CSV.open("table.csv", "ab") do |csv|
+		CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{subdir}/table.csv", "ab") do |csv|
 		csv << [x, q]
 	end
 end
