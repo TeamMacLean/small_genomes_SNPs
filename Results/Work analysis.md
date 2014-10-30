@@ -1,7 +1,7 @@
 Review
 ========
+So, we are looking for the permutation of the contig order that has the correct homozygous/heterozygous SNP ratio distribution. Permutations with distributions close to the expected, are likely be ordered in an arrangement close to the correct. 
 
- permutation of the contig order that has the correct homozygous/heterozygous SNP ratio distribution. Permutations with distributions close to the expected, are likely be ordered in an arrangement close to the correct. 
 The main questions we should ask are: 
 
 **'How well does the algorithm work?'**
@@ -18,9 +18,9 @@ How well does the genetic algorithm work?
 First, the algorithm is run for 40 replicates (40 times). In this case, 
 4 parameter groupings are used, so there are 10 equal replicates per parameter. 
 
-The fitness score (in this case **the sum of distances between adjacent homozygous SNPs**) seems to improve rapidly at the very beginning. However, the improvement is very slight afterwards and all the replicates get to the same point after 60 generations. The lowest total distance (lowest fitness score) would correspond to the correct permutation as the SNPs are clustered together around the causative mutation. 
+The fitness score is in this case **the sum of distances between adjacent homozygous SNPs.** *The lowest total distance -lowest fitness score- would correspond to the correct permutation as the SNPs are clustered together around the causative mutation.* It seems to improve rapidly at the very beginning. However, the improvement is very slight afterwards and all the replicates get to the same point after 60 generations. I don't observe a great difference when using a group of parameters or another.  
 
-Afterwards, those results are compared with the correct permutation's fitness. None of the permutations obtained is close to the ordered genome and changing the parameters doesn't seem to improve this.
+Afterwards, those results are compared to the correct permutation's fitness. None of the permutations obtained is close to the ordered genome and changing the parameters doesn't seem to improve this.
 
 As for the **distance metrics**, the value always oscillates between 0.5 and 1, so according to this, we never get close to the real ordered genome with this method. 
 
@@ -86,7 +86,7 @@ The same type of evaluation is carried out with the distance metrics. We see tha
 
 ###Speculations
 
-It seems that the count ratio, SNP distance and max density methods work more or less ok (in theory) for the purpose of the algorithm. However, the max ratio and hyp distance methods do not seem to be very useful. **What about the maximum hypothesis method?** When it was used with the small genome, the candidate SNP position was really close to the causal mutation in the correctly ordered genome. 
+It seems that the count ratio, SNP distance and max density methods work more or less ok (in theory) for the purpose of the algorithm. However, the max ratio and hyp distance methods do not seem to be very useful. **What about the maximum hypothesis method?** When it was used with the small genome, the candidate SNP position was really close to the causal mutation in the correctly ordered genome, What happen if we use it with a larger genome? 
 
 Some of the distance metrics seem to work just fine, as they assign a 0 value to the correct order and approach to 1 when we get closer to the random permutation,  so we assume that the distance metrics are useful and evaluate correctly the performance of the genetic algorithm. 
 
@@ -94,7 +94,7 @@ But, for example, the harming distance or the R distance that seem to measure th
 
 Future perspectives
 ========
-- Try to reproduce the results 
+- Try to reproduce the results?  
 - Determine why the algorithm never gets to the correcttly ordered permutation
 - Use a more realistic model? 
 - Maybe the whole genome? 
