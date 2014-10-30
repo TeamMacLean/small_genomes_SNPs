@@ -1,5 +1,7 @@
 Review
 ========
+
+ permutation of the contig order that has the correct homozygous/heterozygous SNP ratio distribution. Permutations with distributions close to the expected, are likely be ordered in an arrangement close to the correct. 
 The main questions we should ask are: 
 
 **'How well does the algorithm work?'**
@@ -39,6 +41,9 @@ While the distance between the ordered genome and the permutation is never close
 
 The replicate 60 is used to determine the SNP position. This replicate is obtained using the group of conditions (p6) that gives quite low fitness scores.  However, the parameters don't seem to affect the performance of the algorithm, as the distance metrics are the same for every replicate. The change of the parameters doesn't seem to improve the approximation of the permutation to the correct order. 
 
+In general, it seems that the increase in the genome divisions (number of breaks in the genome to count the number of SNPs in) using 1 division provides worse fitness scores. 
+
+
 ###Speculations
 
 By looking at the causal mutation location, we might say that the best fitness method is the count ratio. However, the correctly ordered genome and the permutations are still 'far' from each other (it seems that the the algorithm doesn't get to the correct permutation of contigs). This **suggests that maybe the algorithm is good enough to predict the causal SNP position although the order of the contigs is not perfectly correct.** However, we should check the reproducibility of this method. 
@@ -48,12 +53,14 @@ By looking at the causal mutation location, we might say that the best fitness m
 Then, we have 2 options: 
 
 1. If the aim was to obtain correct order, the algorithm seems to fail. 
-2. If the aim was to get to the prediction of the causative mutation, the algorithm  works fine when using the count ratio method. 
+2. If the aim was to get the prediction of the causative mutation, the algorithm  works fine when using the count ratio method. 
 
 **Questions I don't know how to answer:**
 
-1. Which criteria are applied to select the replicate used to define the SNP position? Which are the differences between using a given group of parameters or another? 
-2. Why do we need so many parameters to generate the permutations? 
+1. Which criteria are applied to select the **replicate used to define the SNP position**? Which are the differences between using a given group of parameters or another? Shouldn't the replicate that is assigned with a higher fitness score be selected? 
+2. Why do we need so many parameters to generate the permutations? By changing the parameters, I don't see a great improvement in the algorithm performance. So, why don't we set the parameters in the algorithm in advance instead of changing them as command line arguments? 
+3. What is the meaning of this **'divisions' parameter** that seems to affect the count ratio method so much? What happen if we choose one replicate created with 1 division to determine the causal mutation? 
+
 
 How useful are the fitness methods and the distance metrics used to evaluate their performance?
 -------
@@ -79,12 +86,16 @@ The same type of evaluation is carried out with the distance metrics. We see tha
 
 ###Speculations
 
-As it was anticipated in the previous section, the count ratio, SNP distance and max density methods work ok for the purpose of the algorithm. However, the max ratio and hyp distance methods do not seem to be very useful. **What about the maximum hypothesis method?** When it was used with the small genome, the candidate SNP position was really close to the causal mutation in the correctly ordered genome. 
+It seems that the count ratio, SNP distance and max density methods work more or less ok (in theory) for the purpose of the algorithm. However, the max ratio and hyp distance methods do not seem to be very useful. **What about the maximum hypothesis method?** When it was used with the small genome, the candidate SNP position was really close to the causal mutation in the correctly ordered genome. 
 
-Some of the distance metrics seem to work just fine, as they assign a 0 value to the correct order and approach to 1 when we get closer to the random permutation,  so if we assume that the distance metrics are useful and evaluate correctly the performance of the genetic algorithm, **does the algorithm never get to the correctly ordered permutation then?** 
+Some of the distance metrics seem to work just fine, as they assign a 0 value to the correct order and approach to 1 when we get closer to the random permutation,  so we assume that the distance metrics are useful and evaluate correctly the performance of the genetic algorithm. 
+
+But, for example, the harming distance or the R distance that seem to measure the distance as it was expected, give a constant value of 1 to all the replicates in the count ratio method. **Would that mean that the permutation never approaches to the correct order? How is possible that the distance is constant? How can we be sure that the position of the causal SNP is correctly determined? Is the problem in the distance metrics or in the fitness method?** 
 
 Future perspectives
 ========
+- Try to reproduce the results 
+- Determine why the algorithm never gets to the correcttly ordered permutation
 - Use a more realistic model? 
 - Maybe the whole genome? 
 - Use real SNP data to see if the algorithm can predict the SNP position then?
