@@ -81,7 +81,7 @@ The same type of evaluation is carried out with the distance metrics. We see tha
 
 As it was anticipated in the previous section, the count ratio, SNP distance and max density methods work ok for the purpose of the algorithm. However, the max ratio and hyp distance methods do not seem to be very useful. **What about the maximum hypothesis method?** When it was used with the small genome, the candidate SNP position was really close to the causal mutation in the correctly ordered genome. 
 
-So, some of the distance metrics seem to work just fine so, going back to my previous assumption, **does the algorithm never get to the correctly ordered permutation then?** 
+Some of the distance metrics seem to work just fine, as they assign a 0 value to the correct order and approach to 1 when we get closer to the random permutation,  so if we assume that the distance metrics are useful and evaluate correctly the performance of the genetic algorithm, **does the algorithm never get to the correctly ordered permutation then?** 
 
 Future perspectives
 ========
