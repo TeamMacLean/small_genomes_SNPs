@@ -18,7 +18,7 @@ First, the algorithm is run for 40 replicates (40 times). In this case,
 
 The fitness score (in this case **the sum of distances between adjacent homozygous SNPs**) seems to improve rapidly at the very beginning. However, the improvement is very slight afterwards and all the replicates get to the same point after 60 generations. The lowest total distance (lowest fitness score) would correspond to the correct permutation as the SNPs are clustered together around the causative mutation. 
 
-Afterwards, those results are compared with the correct permutation's fitness. Any of permutations are close to the ordered genome and changing the parameters doesn't seem to improve this.
+Afterwards, those results are compared with the correct permutation's fitness. None of the permutations obtained is close to the ordered genome and changing the parameters doesn't seem to improve this.
 
 As for the **distance metrics**, the value always oscillates between 0.5 and 1, so according to this, we never get close to the real ordered genome with this method. 
 
