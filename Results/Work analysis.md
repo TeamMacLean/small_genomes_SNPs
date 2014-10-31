@@ -95,7 +95,7 @@ But, for example, the Hamming distance or the R distance that seem to measure th
 Future perspectives
 ========
 - Try to reproduce the results?  
-- Determine why the algorithm never gets to the correcttly ordered permutation
+- Determine why the algorithm never gets to the correctly ordered permutation
 - Use a more realistic model? 
 - Maybe the whole genome? 
 - Use real SNP data to see if the algorithm can predict the SNP position then?
