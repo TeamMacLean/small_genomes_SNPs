@@ -21,13 +21,13 @@ The fitness score is in this case **the sum of distances between adjacent homozy
 Afterwards, those results are [compared to the correct permutation's fitness score](https://raw.githubusercontent.com/edwardchalstrey1/fragmented_genome_with_snps/max_density/arabidopsis_datasets/10K_dataset4a/umbrella_plot_fits_total_snp_distance_with_correct.png).  For doing this, the correct permutation fitness score is plotted together with the fitness scores obtained from the genetic algorithm.  This is shown on the red line created from "replicate C". None of the replicates has produced permutations with fitness scores close to that of the correctly ordered genome.
 
 As for the **distance metrics**, the value oscillates between 0.5 (squared deviation distance and kendall's tau distance) and 1, so according to this, we never get close to the correctly ordered genome with this method. 
-__*DM! Explain why a distance of 0.5 is not a good distance, Im not sure that I agree with your conclusion* <- I am not sure of this. The permutations obtained are not completely random, they approach to the correct order, we may say that half of the contigs are in the correct order while the other half are not? (altough this is not completely true). [In this script](https://github.com/edwardchalstrey1/pdist/blob/master/lib/pdist.rb) when it says n = permutation.length, does it mean the number of fragments we are arranging?__ 
+__*DM! Explain why a distance of 0.5 is not a good distance, Im not sure that I agree with your conclusion* <- I am not sure of this. The permutations obtained are not completely random, we may say that half of the contigs are in the correct order while the other half are not?. However, I just realised one thing: when analising the [effectiveness of the distance methods](https://github.com/pilarcormo/fragmented_genome_with_snps/blob/master/Progress/Do_metrics_work/do_metrics_work.Rmd), the Square desviation distance and the Kendall's tau distance (those which give a 0.5 value to the permutations in this fitness method), assigned the same value (0.5) to the [completely random permutation](https://raw.githubusercontent.com/edwardchalstrey1/fragmented_genome_with_snps/master/arabidopsis_datasets/small_dataset2a/adjacent_swaps_SquareDeviationDistance_2000pop_10size_0.1Kdiv_swap1.png). So, can we trust them?__ 
 
-Then the [**location of the causal mutation**](https://raw.githubusercontent.com/edwardchalstrey1/fragmented_genome_with_snps/master/arabidopsis_datasets/10K_dataset4a/p_run39/images_hyp.gif) is determined by looking at the main peak at the homozygous to heterozygous SNP ratio distribution plot. The predicted and the correct SNP position are just over 4 Mb apart. Thus, this method is not completely accurate to find the causative SNP. __*DM! On a genome of what size? 4 / 18 Mb doesn't seem so bad!* <- Depending on what you need, if you want to look for genes which expression can be altered by a causative SNP, 4 million bases are quite a few__
+Then the [**location of the causal mutation**](https://raw.githubusercontent.com/edwardchalstrey1/fragmented_genome_with_snps/master/arabidopsis_datasets/10K_dataset4a/p_run39/images_hyp.gif) is determined by looking at the main peak at the homozygous to heterozygous SNP ratio distribution plot. The predicted and the correct SNP position are just over 4 Mb apart. Thus, this method is not completely accurate to find the causative SNP. __*DM! On a genome of what size? 4 / 18 Mb doesn't seem so bad!* <- Depending on what you need, if you want to look for genes which expression can be altered by a causative SNP, 4 million bases are quite a few.__
 
 ###2.  Using the [maximum density method](https://github.com/pilarcormo/fragmented_genome_with_snps/blob/master/Progress/Results3_max_density/results.Rmd)
 
-Same number of replicates and parameter groupings as above. In this case, this method assigns a **maximum density value to each permutation**. This assumes the SNPs are clustered together around the causative mutation. In this case, after 400 generations, a maximum value does not seem to be reached (there is not a plateau). __*DM! So we need to do more permutations?* <- The [location of the causal SNP](https://raw.githubusercontent.com/edwardchalstrey1/fragmented_genome_with_snps/master/arabidopsis_datasets/10K_dataset4b/p_run16/images_hyp.gif) does not change after 100 generations, so I do not think increasing the number of generations would change this, but we could try__ 
+Same number of replicates and parameter groupings as above. In this case, this method assigns a **maximum density value to each permutation**. This assumes the SNPs are clustered together around the causative mutation. In this case, after 400 generations, a maximum value does not seem to be reached (there is not a plateau). __*DM! So we need to do more permutations?* <- The [location of the causal SNP](https://raw.githubusercontent.com/edwardchalstrey1/fragmented_genome_with_snps/master/arabidopsis_datasets/10K_dataset4b/p_run16/images_hyp.gif) does not change after 100 generations, so I do not think increasing the number of generations would change this, but we could try.__ 
 
 Again, the permutations never get exactly to the correct ordered genome (the distance is not close to 0 when using any of the distance metrics, although it is 0,5 when using some of the metrics). As for the location of the causal mutation, the predicted and the correct SNP position are almost 5 Mb apart, so we can conclude that this fitness method is not really useful to predict the causative SNP either. 
 
@@ -59,7 +59,18 @@ Then, we have 2 options:
 
 1. Which criteria are applied to select the **replicate used to define the SNP position**? Which are the differences between using a given group of parameters or another? Shouldn't the replicate that is assigned with a higher fitness score be selected? _DM! higher fitness permutations should be selected, but there is a problem with being too fit, you may reach a local maximum on the fitness hill-climb, so need to mix in some worse ones to allow you to come back down_
 2. Why do we need so many parameters to generate the permutations? By changing the parameters, I don't see a great improvement in the algorithm performance. So, why don't we set the parameters in the algorithm in advance instead of changing them as command line arguments? _DM! Good point, if they do nothing, we can ignore them. The trick is to find the important ones. It seems like the important one is really how you define the fitness score_ 
-3. What is the meaning of this **'divisions' parameter** that seems to affect the count ratio method so much? What happen if we choose one replicate created with 1 division to determine the causal mutation? _DM! An excellent question, you should know this from the code. Try to find out._
+3. What is the meaning of this **'divisions' parameter** that seems to affect the count ratio method so much? What happen if we choose one replicate created with 1 division to determine the causal mutation? __*DM! An excellent question, you should know this from the code. Try to find out.* <- This is the part of the script where it is used. Don't really understand what it does, it just breaks the genome in parts to 'count the number of SNPs in' but don't know how it does that.  __
+
+```
+def self.count(snp_pos, div, genome_length)
+			myr = RinRuby.new(echo = false)
+			myr.assign 'snp_pos', snp_pos
+			myr.assign 'div', div.to_i
+			myr.assign 'l', genome_length
+			myr.eval 'breaks <- c(0)
+			for(i in 1:div){
+			  breaks <- c(breaks,(l/div)*i)}
+```
 
 
 How useful are the fitness methods and the distance metrics used to evaluate their performance?
@@ -67,7 +78,7 @@ How useful are the fitness methods and the distance metrics used to evaluate the
 
 [Do metrics work](https://github.com/pilarcormo/fragmented_genome_with_snps/blob/master/Progress/Do_metrics_work/do_metrics_work.Rmd)
 
-To evaluate the usefulness of every fitness method and the distance metrics,  the optimal permutation (correctly ordered) is mutated by adding adjacent swap mutant (2 adjacent contigs randomly swap positions). The fitness score obtained with each fitness method when this is done is compared with a randomly ordered permutation
+To evaluate the usefulness of every fitness method and the distance metrics,  the optimal permutation (correctly ordered) is mutated by adding adjacent swap mutant (2 adjacent contigs randomly swap positions). The fitness score obtained with each fitness method when this is done is compared with a randomly ordered permutation. For this tests, a small 2 kb genome is used 
 
 - **Count ratio**: permutations being attributed with a high fitness score should approach the correct order, as the score worsen when it approaches the random permutation.
 
@@ -88,18 +99,13 @@ The same type of evaluation is carried out with the distance metrics. We see tha
 
 It seems that the count ratio, SNP distance and max density methods work more or less ok (in theory) for the purpose of the algorithm. However, the max ratio and hyp distance methods do not seem to be very useful. **What about the maximum hypothesis method?** When it was used with the small genome, the candidate SNP position was really close to the causal mutation in the correctly ordered genome, What happen if we use it with a larger genome? 
 
-Some of the distance metrics seem to work just fine, as they assign a 0 value to the correct order and approach to 1 when we get closer to the random permutation,  so we assume that the distance metrics are useful and evaluate correctly the performance of the genetic algorithm. 
-_DM! How does the number of elements and adjacent swaps you make in these tests compare with the number of divisions of the genome you have_ _DM! we only need to swap e.g 5000 for the distance to be like random. With the random start point we are coming from the other side.. how many swaps do we need to make from Random to get to the correct order.. is this why we don't see a distance improvement in our graphs_
-But, for example, the Hamming distance or the R distance that seem to measure the distance as it was expected, give a constant value of 1 to all the replicates in the count ratio method. **Would that mean that the permutation never approaches to the correct order? How is possible that the distance is constant? How can we be sure that the position of the causal SNP is correctly determined? Is the problem in the distance metrics or in the fitness method?** _DM! I think it means that the Hamming distance can't discriminate on permutations of sets of the size you are giving to it._  
+__*DM! How does the number of elements and adjacent swaps you make in these tests compare with the number of divisions of the genome you have* <-In this test we only have 53 contigs because we use the 2 kb genome , and the population size is 10 (we obtain 10 different permutations obtained each generation), so I guess we get to the 'random' state faster than with the larger genome (~1500 contigs), in which we will need to do more swapping to get to the same point. Could we repeat the test with the larger genome? *DM! we only need to swap e.g 5000 for the distance to be like random. With the random start point we are coming from the other side.. how many swaps do we need to make from Random to get to the correct order.. is this why we dont see a distance improvement in our graphs* <- You mean we need more swaps to get to the correct order?__
+
+But, for example, the Hamming distance or the R distance that seem to measure the distance as it was expected, give a constant value of 1 to all the replicates in the count ratio method.  __*DM! I think it means that the Hamming distance cant discriminate on permutations of sets of the size you are giving to it.* Should it work with the small genome then?__
 
 Future perspectives
 ========
-- Try to reproduce the results?  
-- Determine why the algorithm never gets to the correctly ordered permutation
-- Use a more realistic model? 
-- Maybe the whole genome? 
-- Use real SNP data to see if the algorithm can predict the SNP position then?
 
-1. Choose a set of distance methods to focus on.
-2. Run the algorithm on genome divisions of different sizes
-3. Work out (possibly with Carlos) how many swaps we need to make from random to get to within x swaps of an original permutation (Im pretty certain this is a solved maths problem and Carlos will know of the right question to ask.
+1. Choose a set of distance methods to focus on. __<-Which criteria should I use to select one distance method or another? All of them assign the same value to the random permutation in the test and to our permutations in the fitness methods. Are our best permutations taken as random?__
+2. Run the algorithm on genome divisions of different sizes __<- How can I select the size of the divisions?__
+3. Work out (possibly with Carlos) how many swaps we need to make from random to get to within x swaps of an original permutation (Im pretty certain this is a solved maths problem and Carlos will know of the right question to ask. __<- You mean how many swaps we need to make from random to get to a correct permutation?__
