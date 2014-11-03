@@ -29,7 +29,7 @@ Then the [**location of the causal mutation**](https://raw.githubusercontent.com
 
 Same number of replicates and parameter groupings as above. In this case, this method assigns a **maximum density value to each permutation**. This assumes the SNPs are clustered together around the causative mutation. In this case, after 400 generations, a maximum value does not seem to be reached (there is not a plateau). __*DM! So we need to do more permutations?* <- The [location of the causal SNP](https://raw.githubusercontent.com/edwardchalstrey1/fragmented_genome_with_snps/master/arabidopsis_datasets/10K_dataset4b/p_run16/images_hyp.gif) does not change after 100 generations, so I do not think increasing the number of generations would change this, but we could try.__ 
 
-Again, the permutations never get exactly to the correct ordered genome (the distance is not close to 0 when using any of the distance metrics, although it is 0,5 when using some of the metrics). As for the location of the causal mutation, the predicted and the correct SNP position are almost 5 Mb apart, so we can conclude that this fitness method is not really useful to predict the causative SNP either. 
+Again, the permutations never get exactly to the correct ordered genome (the distance is not close to 0 when using any of the distance metrics, although it is 0.5 when using some of the metrics). As for the location of the causal mutation, the predicted and the correct SNP position are almost 5 Mb apart, so we can conclude that this fitness method is not really useful to predict the causative SNP either. 
 
 
 ###3. Using the [count ratio method](https://github.com/pilarcormo/fragmented_genome_with_snps/blob/master/Progress/Results1_count_ratio/results.Rmd). 
@@ -59,17 +59,16 @@ Then, we have 2 options:
 
 1. Which criteria are applied to select the **replicate used to define the SNP position**? Which are the differences between using a given group of parameters or another? Shouldn't the replicate that is assigned with a higher fitness score be selected? _DM! higher fitness permutations should be selected, but there is a problem with being too fit, you may reach a local maximum on the fitness hill-climb, so need to mix in some worse ones to allow you to come back down_
 2. Why do we need so many parameters to generate the permutations? By changing the parameters, I don't see a great improvement in the algorithm performance. So, why don't we set the parameters in the algorithm in advance instead of changing them as command line arguments? _DM! Good point, if they do nothing, we can ignore them. The trick is to find the important ones. It seems like the important one is really how you define the fitness score_ 
-3. What is the meaning of this **'divisions' parameter** that seems to affect the count ratio method so much? What happen if we choose one replicate created with 1 division to determine the causal mutation? __*DM! An excellent question, you should know this from the code. Try to find out.* <- This is the part of the script where it is used. Don't really understand what it does, it just breaks the genome in parts to 'count the number of SNPs in' but don't know how it does that.  __
+3. What is the meaning of this **'divisions' parameter** that seems to affect the count ratio method so much? What happen if we choose one replicate created with 1 division to determine the causal mutation? **_DM! An excellent question, you should know this from the code. Try to find out._ <- This is the part of the script where it is used. Don't really understand what it does, it just breaks the genome in parts to 'count the number of SNPs in' but don't know how it does that (or why).**
 
 ```
 def self.count(snp_pos, div, genome_length)
-			myr = RinRuby.new(echo = false)
-			myr.assign 'snp_pos', snp_pos
-			myr.assign 'div', div.to_i
-			myr.assign 'l', genome_length
-			myr.eval 'breaks <- c(0)
-			for(i in 1:div){
-			  breaks <- c(breaks,(l/div)*i)}
+	myr = RinRuby.new(echo = false)
+	myr.assign 'snp_pos', snp_pos
+	myr.assign 'div', div.to_i
+	myr.assign 'l', genome_length
+	myr.eval 'breaks <- c(0)
+	for(i in 1:div){ breaks <- c(breaks,(l/div)*i)}
 ```
 
 
@@ -107,5 +106,5 @@ Future perspectives
 ========
 
 1. Choose a set of distance methods to focus on. __<-Which criteria should I use to select one distance method or another? All of them assign the same value to the random permutation in the test and to our permutations in the fitness methods. Are our best permutations taken as random?__
-2. Run the algorithm on genome divisions of different sizes __<- How can I select the size of the divisions?__
+2. Run the algorithm on genome divisions of different sizes __<- By using the count ratio method I assume. __
 3. Work out (possibly with Carlos) how many swaps we need to make from random to get to within x swaps of an original permutation (Im pretty certain this is a solved maths problem and Carlos will know of the right question to ask. __<- You mean how many swaps we need to make from random to get to a correct permutation?__
