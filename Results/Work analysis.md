@@ -106,5 +106,5 @@ Future perspectives
 ========
 
 1. Choose a set of distance methods to focus on. __<-Which criteria should I use to select one distance method or another? All of them assign the same value to the random permutation in the test and to our permutations in the fitness methods. Are our best permutations taken as random?__
-2. Run the algorithm on genome divisions of different sizes __<- By using the count ratio method I assume. __
+2. Run the algorithm on genome divisions of different sizes **<- By using the count ratio method I assume.**
 3. Work out (possibly with Carlos) how many swaps we need to make from random to get to within x swaps of an original permutation (Im pretty certain this is a solved maths problem and Carlos will know of the right question to ask. __<- You mean how many swaps we need to make from random to get to a correct permutation?__
