@@ -1,5 +1,3 @@
-#encoding: utf-8
-
 class FitnessScore
 	require 'rinruby'
 	require_relative 'snp_dist'
@@ -35,7 +33,7 @@ class FitnessScore
 			x = 0
 			ratios = []
 			div.times do
-				count_ratio = ((hm_count[x] + 1).to_f / (ht_count[x] + 1).to_f) # a measure of ratio
+				count_ratio = ((hm_count[x] + 1).to_f / (ht_count[x] + 1).to_f) # a measure of ratio
 				ratios << count_ratio
 				x+=1
 			end
@@ -69,7 +67,7 @@ class FitnessScore
 	end
 
 	# Input: Array of homozygous snp positions
-	# Output: Float of the maximum kernel density value of the homozygous SNP distribution
+	# Output: Float of the maximum kernel density value of the homozygous SNP distribution
 	def self.max_density(hm)
 		myr = RinRuby.new(echo=false)
 		myr.hm = hm
@@ -94,7 +92,7 @@ class FitnessScore
 	# Input 0: Array of homozygous snp positions
 	# Input 1: Array of heterozygous snp positions
 	# Input 2: Number of divisions of genome at which to calculate ratios
-	# Input 3: Length of genome
+	# Input 3: Length of genome
 	# Output: Float of the maximum kernel density value of the 'hypothetical snps' ratio vector
 	def self.max_hyp(hm, ht, div, genome_length)
 		ratios = FitnessScore.ratio(hm, ht, div, genome_length)
@@ -105,7 +103,7 @@ class FitnessScore
 	# Input 0: Array of homozygous snp positions
 	# Input 1: Array of heterozygous snp positions
 	# Input 2: Number of divisions of genome at which to calculate ratios
-	# Input 3: Length of genome
+	# Input 3: Length of genome
 	# Output: Integer of the total distance in bases, between adjacent SNPs from hypothetical ratio distribution (see SNPdist.hyp_snps)
 	def self.hyp_distance(hm, ht, div, genome_length)
 		ratios = FitnessScore.ratio(hm, ht, div, genome_length)

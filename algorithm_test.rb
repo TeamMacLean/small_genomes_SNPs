@@ -82,6 +82,7 @@ if fitness_method == 'count_ratio'
 else
 	expected_ratios = nil
 end
+puts "Array of expected ratios created"
 ###############################################################################
 
 
