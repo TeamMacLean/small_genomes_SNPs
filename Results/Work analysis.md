@@ -97,5 +97,5 @@ Future perspectives
 ========
 
 1. Choose a set of distance methods to focus on. 
-2. Run the algorithm on genome divisions of different sizes. Startin by using the count ratio method. 
+2. Run the algorithm on genome divisions of different sizes. Use the count ratio method fist.
 3. Work out (possibly with Carlos) how many swaps we need to make from random to get to within x swaps of an original permutation (Im pretty certain this is a solved maths problem and Carlos will know of the right question to ask. So how many swaps do we need from perfect until our distance method tells us that it looks like the random (hint: See ed's graphs). Can we make a graph or model that tells us for a given genome size and given number of fragments how many swaps we are going to need.
