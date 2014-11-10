@@ -119,9 +119,9 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 4: Generation of the genetic algorithm
 	# Input 5: Output 3 of select
 	# Output: txt files with data interpretable by text-table gem AND txt files for each permutation
-	# def self.save_perms(pop_fits, location, dataset, run, gen, types)
-	# 	Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}/Gen#{gen}"))
-	# 	Dir.chdir(File.join(Dir.home, "#{location}")) do
+	def self.save_perms(pop_fits, location, dataset, run, gen, types)
+		# Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}/Gen#{gen}"))
+		Dir.chdir(File.join(Dir.home, "#{location}")) do
 	# 		table_data = [['Permutation', 'Fitness Score', 'Type', 'FASTA ids']]
 	# 		x = 1
 	# 		pop_fits.each do |fitness, permutation|
@@ -136,12 +136,12 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# 			WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}/permutation#{x}", [fitness, ids].flatten)
 	# 			x+=1
 	# 		end
-	# 		if gen != 0
-	# 			ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
-	# 			WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}/best_permutation", [pop_fits[-1][0], ids].flatten) # fitness and ids
-	# 		end
-	# 	end
-	# end
+			if gen != 0
+				ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
+				WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_best_permutation", [pop_fits[-1], ids].flatten) # fitness and ids
+			end
+		end
+	end
 
 	# Input: Array of number values
 	# Output: The area under the curve for the input array plotted against 1..input_length
@@ -207,19 +207,23 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length, opts[:fitness_method]) # select fittest permutations in population
 
-			# unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
-			# 	save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types) # save the permutations from this generation, with fitness scores
-			# end
+			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
+				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types) # save the permutations from this generation, with fitness scores
+			end
 
 			puts "Gen#{gen}\n Fitness Score = #{pop_fits[-1][0]}" # print output to show improvement of best permutation over generations as algorithm runs
+#####CSV file generation (Pilar)####################################################################################################################
+			path = "arabidopsis_datasets/#{opts[:dataset]}/#{opts[:run]}/table.csv"
 
-			CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/table.csv", "ab") do |csv|
-				puts "#{gen}"
+			# CSV.open(path, "wb") do |csv|
+				# csv << ["Generation", "Best fitness score"]
+			# end
+			CSV.open(path, "ab") do |csv|
 				q = pop_fits [-1][0]
 				p = gen
 				csv << [p, q]
-				puts "#{p}"
 			end
+###################
 				
 			ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data) # get the SNP distributions for the best permutation in the generation
 
