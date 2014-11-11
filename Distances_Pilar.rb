@@ -43,7 +43,7 @@ master_array.each do |array|
 	dist << PDist.deviation(correct_frags, array)
 end
 
-puts dist.length
+puts "Using deviation distance"
 
 CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/deviation.csv", 'ab') 
 x = 0
@@ -63,9 +63,7 @@ dist = []
 master_array.each do |array|
 	dist << PDist.square(correct_frags, array)
 end
-
-puts dist.length
-
+puts "Using square deviation distance"
 CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/square.csv", 'ab') 
 x = 0
 dist.each do |element|
@@ -78,14 +76,13 @@ end
 end
 #############################################
 
-#####################Square##################
+#####################Hamming##################
 
 dist = []
 master_array.each do |array|
 	dist << PDist.hamming(correct_frags, array)
 end
-
-puts dist.length
+puts "Using hamming distance"
 
 CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/hamming.csv", 'ab') 
 x = 0
@@ -98,15 +95,13 @@ dist.each do |element|
 end
 end
 #############################################
-#####################Square##################
+#####################r##################
 
 dist = []
 master_array.each do |array|
 	dist << PDist.rdist(correct_frags, array)
 end
-
-puts dist.length
-
+puts "Using R distance"
 CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/rdist.csv", 'ab') 
 x = 0
 dist.each do |element|
@@ -118,14 +113,13 @@ dist.each do |element|
 end
 end
 #############################################
-#####################Square##################
+#####################lcs##################
 
 dist = []
 master_array.each do |array|
 	dist << PDist.lcs(correct_frags, array)
 end
-
-puts dist.length
+puts "Using longest common sub-sequence"
 
 CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/lcs.csv", 'ab') 
 x = 0
@@ -144,7 +138,7 @@ master_array.each do |array|
 	dist << PDist.kendalls_tau(correct_frags, array)
 end
 
-puts dist.length
+puts "Using kendalls_tau"
 
 CSV.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/kendallstau.csv", 'ab') 
 x = 0
