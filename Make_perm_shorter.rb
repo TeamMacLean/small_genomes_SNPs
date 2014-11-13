@@ -31,7 +31,7 @@ File.open("arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}/best_permutation.txt
 end
 perm.shift
 
-puts perm.to_json
+# puts perm.to_json
 
 
 length = correct_frags.length
@@ -42,7 +42,7 @@ dist = []
 while length > 2 
 	correct_frags = correct_frags[1..-2]
 	perm = perm[1..-2]
-	dist << PDist.lcs(correct_frags, perm)
+	dist << PDist.deviation(correct_frags, perm)
 	master_perm << perm
 	master_x << correct_frags
 	length = correct_frags.length
