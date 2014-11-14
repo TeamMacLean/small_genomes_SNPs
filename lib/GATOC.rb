@@ -137,7 +137,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# 			x+=1
 	# 		end
 			if gen != 0
-				ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
+				ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1])[0]
 				WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_best_permutation", [pop_fits[-1], ids].flatten) # fitness and ids
 			end
 		end
