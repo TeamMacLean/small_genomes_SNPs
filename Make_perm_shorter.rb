@@ -1,14 +1,16 @@
 #!/usr/bin/env ruby
 
-require 'PDist'
+# require 'PDist'
 require_relative 'lib/model_genome'
 require_relative 'lib/reform_ratio'
+require_relative 'Make_them_shorter'
 require 'json'
 require 'csv'
 
 dataset = ARGV[0]
 run = ARGV[1]
 gen = ARGV[2]
+name = ARGV[3]
 
 path = "arabidopsis_datasets/#{dataset}/frags.fasta"
 
@@ -31,30 +33,54 @@ File.open("arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}/best_permutation.txt
 end
 perm.shift
 
-# puts perm.to_json
 
+dist = Measure::distance(correct_frags, perm)
+puts "#{dist}"
 
-length = correct_frags.length
-
-master_perm	= []
-master_x = []
-dist = []
-while length > 2 
-	correct_frags = correct_frags[1..-2]
-	perm = perm[1..-2]
-	dist << PDist.deviation(correct_frags, perm)
-	master_perm << perm
-	master_x << correct_frags
-	length = correct_frags.length
-end
-
-CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", 'ab') 
 x = 0
 dist.each do |element|
-	if x <= gen.to_i
-		x = x + 1
-		CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", "ab") do |csv|
+	CSV.open("arabidopsis_datasets/#{dataset}/#{run}/#{name}.csv", "ab") do |csv|
+		x += 1
 		csv << [x, element]
 	end
 end
-end
+
+# CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", 'ab') 
+# x = 0
+# dist.each do |element|
+# 	if x <= gen.to_i
+# 		x = x + 1
+# 		CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", "ab") do |csv|
+# 		csv << [x, element]
+# 	end
+# end
+# end
+
+
+# puts perm.to_json
+
+
+# length = correct_frags.length
+
+# master_perm	= []
+# master_x = []
+# dist = []
+# while length > 2 
+# 	correct_frags = correct_frags[1..-2]
+# 	perm = perm[1..-2]
+# 	dist << PDist.deviation(correct_frags, perm)
+# 	master_perm << perm
+# 	master_x << correct_frags
+# 	length = correct_frags.length
+# end
+
+# CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", 'ab') 
+# x = 0
+# dist.each do |element|
+# 	if x <= gen.to_i
+# 		x = x + 1
+# 		CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", "ab") do |csv|
+# 		csv << [x, element]
+# 	end
+# end
+# end
