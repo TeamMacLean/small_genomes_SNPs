@@ -25,9 +25,9 @@ class Measure
 					original.delete(a)
 				end
 			end
-			# puts p.to_json
-			# puts original.to_json	
-			dist << PDist.kendalls_tau(original, p)
+			puts p.to_json
+			puts original.to_json	
+			dist << PDist.lcs(original, p)
 			i+=1
 		end
 		return dist

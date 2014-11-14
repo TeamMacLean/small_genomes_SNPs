@@ -28,7 +28,7 @@ end
 
 perm = []
 
-File.open("arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}/best_permutation.txt").each do |line|
+File.open("arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}_best_permutation.txt").each do |line|
 	perm << line.split("\n")[0]
 end
 perm.shift
