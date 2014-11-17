@@ -1,19 +1,19 @@
 #!/usr/bin/env ruby
 
-# require 'PDist'
-require_relative 'lib/model_genome'
-require_relative 'lib/reform_ratio'
-require_relative 'Make_them_shorter'
+require_relative 'measure'
 require 'json'
 require 'csv'
 
 dataset = ARGV[0]
 run = ARGV[1]
 gen = ARGV[2]
-name = ARGV[3]
+method = ARGV[3]
+name = ARGV[4]
+
+
+###################Creation of original array
 
 path = "arabidopsis_datasets/#{dataset}/frags.fasta"
-
 correct_frags = []
 
 File.open(path, 'r') do |f|
@@ -26,16 +26,42 @@ File.open(path, 'r') do |f|
 	end
 end 
 
+#################Creation of permutation array
+
 perm = []
 
-File.open("arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}/best_permutation.txt").each do |line|
+File.open("arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}_best_permutation.txt").each do |line|
 	perm << line.split("\n")[0]
 end
 perm.shift
 
+################Measure of the distance depeding on the metrics selected 
 
-dist = Measure::distance(correct_frags, perm)
-puts "#{dist}"
+if method == 'square'
+	dist = Measure::square(correct_frags, perm)
+end
+
+if method == 'deviation'
+	dist = Measure::deviation(correct_frags, perm)
+end
+
+if method == 'LCS'
+	dist = Measure::LCS(correct_frags, perm)
+end
+
+if method == 'hamming'
+	dist = Measure::hamming(correct_frags, perm)
+end
+
+if method == 'rdist'
+	dist = Measure::kendalls_tau(correct_frags, perm)
+end
+
+if method == 'kendalls_tau'
+	dist = Measure::kendalls_tau(correct_frags, perm)
+end
+
+#################Put distances in a CSV file
 
 x = 0
 dist.each do |element|
@@ -44,43 +70,3 @@ dist.each do |element|
 		csv << [x, element]
 	end
 end
-
-# CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", 'ab') 
-# x = 0
-# dist.each do |element|
-# 	if x <= gen.to_i
-# 		x = x + 1
-# 		CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", "ab") do |csv|
-# 		csv << [x, element]
-# 	end
-# end
-# end
-
-
-# puts perm.to_json
-
-
-# length = correct_frags.length
-
-# master_perm	= []
-# master_x = []
-# dist = []
-# while length > 2 
-# 	correct_frags = correct_frags[1..-2]
-# 	perm = perm[1..-2]
-# 	dist << PDist.deviation(correct_frags, perm)
-# 	master_perm << perm
-# 	master_x << correct_frags
-# 	length = correct_frags.length
-# end
-
-# CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", 'ab') 
-# x = 0
-# dist.each do |element|
-# 	if x <= gen.to_i
-# 		x = x + 1
-# 		CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", "ab") do |csv|
-# 		csv << [x, element]
-# 	end
-# end
-# end

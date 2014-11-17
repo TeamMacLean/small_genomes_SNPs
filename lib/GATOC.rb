@@ -130,15 +130,15 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# 		end
 	# 		WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}/table_data", table_data)
 
-	# 		x = 1
-	# 		pop_fits.each do |fitness, perm|
-	# 			ids = ReformRatio::fasta_id_n_lengths(perm)[0]
-	# 			WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}/permutation#{x}", [fitness, ids].flatten)
-	# 			x+=1
-	# 		end
+			# x = 1
+			# pop_fits.each do |fitness, perm|
+			# 	ids = ReformRatio::fasta_id_n_lengths(perm)[0]
+			# 	WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_permutation#{x}", [fitness, ids].flatten)
+			# 	x+=1
+			# end
 			if gen != 0
-				ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1])[0]
-				WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_best_permutation", [pop_fits[-1], ids].flatten) # fitness and ids
+				ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
+				WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_best_permutation", [pop_fits[-1][0], ids].flatten) # fitness and ids
 			end
 		end
 	end

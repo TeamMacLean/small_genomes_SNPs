@@ -9,9 +9,9 @@ class ReformRatio
 		ids, lengths = [], []
 		fasta.each do |i|
 			ids << i.entry_id
-			# lengths << i.length
+			lengths << i.length
 		end
-		return ids
+		return ids, lengths
 	end
 
 	# Input: VCF file
