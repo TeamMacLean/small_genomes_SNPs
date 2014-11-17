@@ -12,4 +12,11 @@ As we can see here, all the metrics follow aproximately the same trend. However,
 
 When using the count ratio method, we see a decrease in the distance once we have removed 14 contigs at each end. This means that when we only have half of the contigs in the middle, the distance is closer to 0 than any other time. Also, we can see that the count ratio method is more effective in arranging the contigs. It even gets to 0 when there are only 2 fragments left. 
 
-The hamming distance and the R distance seem to be the less useful, while the rest metrics are more or less accurate for the purpuse
+The hamming distance and the R distance seem to be the less useful, while the rest metrics are more or less accurate for the purpose.
+
+20 kb genome
+------
+
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplot.20kb.shorter.png?raw=true)
+
+The results are similar to those shown above. The distance DOES improve when removing contigs at both ends of the permutation. 
