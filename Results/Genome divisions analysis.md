@@ -9,7 +9,7 @@ Genome divisions
      
      <tr><th>100,000</th><th>arabidopsis_c4[-100000..-1]</th><th>100</th><th>rnorm(100, 50000, 5000)</th><th>runif(100, 1, 100000)</th><th>100kbgenome</th></tr>
      
-      <tr><th>1,000,000</th><th>arabidopsis_c4[-1000000..-1]</th><th>1000</th><th>rnorm(100, 50000, 5000)</th><th>runif(100, 1, 100000)</th><th>100kbgenome</th></tr>
+      <tr><th>1,000,000</th><th>arabidopsis_c4[-1000000..-1]</th><th>1000</th><th>rnorm(1000, 500000, 10000)</th><th>runif(1000, 1, 1000000)</th><th>100kbgenome</th></tr>
   
  </table>
 ####__2 Kb genome using count ratio method__: 
@@ -37,7 +37,7 @@ Position in the correct ordered genome: 3996
  <tr><th>Number of generations</th><th>Population size</th><th>Select number</th><th>Chunk mutants</th><th>Swap mutants</th><th>Save</th><th>Random</th><th>Divisions (1000s)</th><th>Location SNP</th><th>Name of the file</th></tr>
 
   <tr>   <td>39</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>5</td> <td>5642</td><td>count_ratio</td></tr>
-   <tr>   <td>-</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>10</td> <td>?</td><td>count_ratio2</td></tr>
+   <tr>   <td>59</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>10</td> <td><span style="color:red">4830</td><td>count_ratio2</td></tr>
   </table>
     
 #### __20 Kb genome using count ratio method__: 
@@ -71,5 +71,5 @@ Position in the correct oredered genome: <span style="color:red">10028
   The size of the genome is not that important as the number of fragments generated. In the 20 kb genome, we generated 528 fragments of 25-50 bp while in the 100 kb genome, we generated 670 fragments of 100-200 bp so the location of the SNP is more accurate when using the count ratio method. My next plan is to generate __fewer but larger contigs__ to see the effect of the genome divisions on that:
   
 #### __1000 Kb genome using count ratio method__
-663 fragments of sizes 1000-2000 bp
+663 fragments of sizes 1000-2000 bp (closer to reality)
   

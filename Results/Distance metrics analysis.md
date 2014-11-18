@@ -32,4 +32,9 @@ The hamming distance and the R distance seem to be the less useful, while the re
 ![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots.%20Distances/Rplot.100kb_shorter.10div.png?raw=false)
 
 
-These results do not correlate with the ones shown for the 2 kb genome. In this case, we do not see an improvement in the distance when we remove the contigs in the 
+These results do not correlate with the ones shown for the 2 kb genome. In this case, we do not see an improvement in the distance when we remove the contigs in the first and last part of the permutation.
+
+1000 kb genome
+------
+
+![Image]a
