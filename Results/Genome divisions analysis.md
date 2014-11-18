@@ -38,6 +38,7 @@ Position in the correct ordered genome: 3996
 
   <tr>   <td>39</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>5</td> <td>5642</td><td>count_ratio</td></tr>
    <tr>   <td>59</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>10</td> <td><span style="color:red">4830</td><td>count_ratio2</td></tr>
+   <tr>   <td>?</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>100</td> <td>?</td><td>count_ratio3</td></tr>
   </table>
     
 #### __20 Kb genome using count ratio method__: 
@@ -50,7 +51,7 @@ Position in the correct oredered genome: <span style="color:red">10028
  
 
   <tr>   <td>39</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>5</td> <td><span style="color:red">10797</td><td>count_ratio2</td></tr>
-    <tr>   <td>59</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>10</td> <td>3530</td><td>count_ratio3</td></tr>
+    <tr>   <td>59</td> <td>100</td> <td>50</td> <td>35</td> <td>35</td> <td>25</td> <td>5</td> <td>10</td> <td>3530</td><td>count_ratio3</td></tr>    
  
 
   </table>

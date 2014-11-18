@@ -9,6 +9,7 @@ Distance metrics
 
 
 - Using the count ratio method
+
 ![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots.%20Distances/Rplot.Comparison%20between%20distance%20metrics.%20countratio2.png?raw=true)
 
 
@@ -19,6 +20,12 @@ As we can see here, all the metrics follow aproximately the same trend. However,
 When using the count ratio method, we see a decrease in the distance once we have removed 14 contigs at each end. This means that when we only have half of the contigs in the middle, the distance is closer to 0 than any other time. Also, we can see that the count ratio method is more effective in arranging the contigs. It even gets to 0 when there are only 2 fragments left. 
 
 The hamming distance and the R distance seem to be the less useful, while the rest metrics are more or less accurate for the purpose.
+
+8 kb genome
+------
+
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots.%20Distances/Rplot.8kb_10div.png?raw=false)
+
 
 20 kb genome
 ------
@@ -36,5 +43,3 @@ These results do not correlate with the ones shown for the 2 kb genome. In this 
 
 1000 kb genome
 ------
-
-![Image]a
