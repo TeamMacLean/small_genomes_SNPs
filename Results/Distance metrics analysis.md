@@ -5,11 +5,11 @@ Distance metrics
 ------
 - Using the max density method
 
-![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplot.%20Comparison%20between%20distance%20metrics%20maxdensity.png?raw=true)
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots.%20Distances/Rplot.%20Comparison%20between%20distance%20metrics%20maxdensity.png?raw=true)
 
 
 - Using the count ratio method
-![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplot.Comparison%20between%20distance%20metrics.%20countratio2.png?raw=true)
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots.%20Distances/Rplot.Comparison%20between%20distance%20metrics.%20countratio2.png?raw=true)
 
 
 As we move forward 1 unit in the x axis, the first and last contigs of the permutation (last permutation of the run) are removed from the array. The same values are removed from the correctly ordered array and then we measure the distance between both arrays using all the distance metrics. 
@@ -23,11 +23,13 @@ The hamming distance and the R distance seem to be the less useful, while the re
 20 kb genome
 ------
 
-![Image]()
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots.%20Distances/Rplot.20kb_shorter_5div.png?raw=false)
 
-(The results are similar to those shown above. The distance DOES improve when we remove contigs at both ends of the permutation.I decided to only use these 3 distance metrics (deviation, square deviation and LCS))
 
 100 kb genome
 ------
 
-![Image]()
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots.%20Distances/Rplot.100kb_shorter.10div.png?raw=false)
+
+
+These results do not correlate with the ones shown for the 2 kb genome. In this case, we do not see an improvement in the distance when we remove the contigs in the 
