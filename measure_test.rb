@@ -23,13 +23,13 @@ class MeasureTest < Test::Unit::TestCase
 	def test_square
 		##test for even length perms
 
-		distances = Measure.distance(@even_original, @even_perm)
+		distances = Measure.square(@even_original, @even_perm)
 		assert_equal([0.13095238095238093, 0.02857142857142857, 0.1, 0.0], distances)
 	end
 
 	def test_square
 		##test for odd length perms
-		distances = Measure.distance(@odd_original, @odd_perm)
+		distances = Measure.square(@odd_original, @odd_perm)
 		assert_equal([0.14285714285714285, 0.05, 0.25], distances)
 	end
 

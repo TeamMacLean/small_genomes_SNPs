@@ -26,6 +26,8 @@ File.open(path, 'r') do |f|
 	end
 end 
 
+puts "Oh, master, original permutation created"
+
 #################Creation of permutation array
 
 perm = []
@@ -34,6 +36,8 @@ File.open("arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}_best_permutation.txt
 	perm << line.split("\n")[0]
 end
 perm.shift
+
+puts "Perm array created, master"
 
 ################Measure of the distance depeding on the metrics selected 
 
@@ -54,10 +58,11 @@ if method == 'hamming'
 end
 
 if method == 'rdist'
-	dist = Measure::kendalls_tau(correct_frags, perm)
+	dist = Measure::rdist(correct_frags, perm)
 end
 
 if method == 'kendalls_tau'
+	puts "Yeah, Im using the kendalls_tau, master"
 	dist = Measure::kendalls_tau(correct_frags, perm)
 end
 
@@ -70,3 +75,5 @@ dist.each do |element|
 		csv << [x, element]
 	end
 end
+
+puts "YEAH"

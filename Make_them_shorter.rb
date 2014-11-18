@@ -11,12 +11,7 @@ require 'PDist'
 class Measure
 
 	def self.distance(original, perm)
-		square = []
-		deviation = []
-		lcs = []
-		rdist = []
-		kendalls = []
-		hamming = 
+		dist = []
 		# CSV.open("arabidopsis_datasets/#{dataset}/#{run}/table_distances_shorter.csv", 'ab') 
 		length = original.length
 		i = 1
@@ -30,9 +25,9 @@ class Measure
 					original.delete(a)
 				end
 			end
-			# puts p.to_json
-			# puts original.to_json	
-			dist << PDist.square(original, p)
+			puts p.to_json
+			puts original.to_json	
+			dist << PDist.kendalls_tau(original, p)
 
 			i+=1
 		end

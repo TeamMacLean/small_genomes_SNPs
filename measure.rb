@@ -47,7 +47,7 @@ class Measure
 		distances = []
 		while perm.length > 3
 			original, perm = Measure.top_and_tail(original, perm)
-			distances << PDist.LCS(original, perm)
+			distances << PDist.lcs(original, perm)
 		end
 		return distances
 	end
