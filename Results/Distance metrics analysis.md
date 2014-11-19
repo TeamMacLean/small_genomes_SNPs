@@ -43,3 +43,4 @@ These results do not correlate with the ones shown for the 2 kb genome. In this 
 
 1000 kb genome
 ------
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots.%20Distances/Rplot.100kb_shorter.10div.png?raw=false)
