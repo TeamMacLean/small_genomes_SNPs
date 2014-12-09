@@ -6,8 +6,8 @@ require_relative 'lib/write_it'
 Dir.mkdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{ARGV[0]}"))
 
 # Create the lists of homozygous and heterozygous SNPs
-hm_r = 'hm <- rnorm(1000, 500000, 10000)' # Causative SNP at/near 10000
-ht_r = 'ht <- runif(1000, 1, 1000000)'   # Genome length of 10000
+hm_r = 'hm <- rnorm(100, 4000, 10000)' # Causative SNP at/near 10000. Keep constant. 
+ht_r = 'ht <- runif(100, 1, 8000)'   # Genome length of 10000
 hm, ht = ModelGenome::get_snps(hm_r, ht_r)
 snp_pos = [hm, ht].flatten
 
@@ -16,9 +16,9 @@ puts "There are #{ht.length} heterozygous SNPs"
 puts "Is there a SNP at the centre of the distribution? -- #{snp_pos.include?(500000)}"
 
 arabidopsis_c4 = ModelGenome::fasta_to_char_array("TAIR10_chr4.fasta")
-small_genome = arabidopsis_c4[-1000000..-1] # Genome length of 100 kb
+small_genome = arabidopsis_c4[-8000..-1] # Genome length of 100 kb
 
-contig_size = 1000 # 100-200 bp
+contig_size = 100 # 100-200 bp
 frags = ModelGenome::get_frags(small_genome, contig_size)
 
 puts "Small genome     length: #{small_genome.length} bases"
