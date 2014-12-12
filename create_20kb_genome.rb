@@ -3,25 +3,27 @@ require_relative 'lib/model_genome'
 require_relative 'lib/write_it'
 
 # make the directory to put data files into
-Dir.mkdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{ARGV[0]}"))
+Dir.mkdir(File.join(Dir.home, "Genomes_SNPs/arabidopsis_datasets/#{ARGV[0]}"))
 
 # Create the lists of homozygous and heterozygous SNPs
-hm_r = 'hm <- rnorm(200, 10000, 1000)' # Causative SNP at/near 10000
-ht_r = 'ht <- runif(200, 1, 20000)'   # Genome length of 10000
+fasta_file = "TAIR10_chr1.fasta"
+genome_length = ReformRatio::genome_length(fasta_file)
+
+hm_r = "hm <- rnorm(12000, 15213836, 1000000)" # Causative SNP at/near 1000
+ht_r = "ht <- runif(12000, 1, #{genome_length})" # Genome length is same as arabidopisis chromosome 4
 hm, ht = ModelGenome::get_snps(hm_r, ht_r)
 snp_pos = [hm, ht].flatten
 
 puts "There are #{hm.length} homozygous SNPs"
 puts "There are #{ht.length} heterozygous SNPs"
-puts "Is there a SNP at the centre of the distribution? -- #{snp_pos.include?(10000)}"
+puts "Is there a SNP at the centre of the distribution? -- #{snp_pos.include?(15213836)}"
 
-arabidopsis_c4 = ModelGenome::fasta_to_char_array("TAIR10_chr4.fasta")
-small_genome = arabidopsis_c4[-20000..-1] # Genome length of 100 kb
-
-contig_size = 200 # 100-200 bp
-frags = ModelGenome::get_frags(small_genome, contig_size)
-
-puts "Small genome     length: #{small_genome.length} bases"
+arabidopsis_c4 = ModelGenome::fasta_to_char_array(fasta_file)
+puts "Fragmenting arabidopsis_c4..."
+contig_size = 12000 # 10-20kb
+frags = ModelGenome::get_frags(arabidopsis_c4, contig_size)
+puts "Done!"
+puts "Arabidopsis chr4 length: #{arabidopsis_c4.length}/ kb"
 puts "Fragmented seq   length: #{frags.join.length} = close enough? You decide."
 puts "You have created #{frags.length} fragments of sizes #{contig_size}-#{contig_size*2}"
 
