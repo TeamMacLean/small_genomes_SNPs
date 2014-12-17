@@ -2,19 +2,15 @@
 
 require_relative 'lib/reform_ratio'
 require_relative 'lib/write_it'
+require_relative 'lib/stuff'
 require 'Bio'
 require 'pp'
 require 'pdist'
 
+##Open the vcf file and create lists of heterozygous and homozygous SNPs
 path = "/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/snps.vcf"
-
 hm = []
 ht = []
-
-dic_hm = {}
-dic_ht = {}
-
-##Open the vcf file and create lists of heterozygous and homozygous SNPs
 File.open(path, 'r').each do |line|
 	next if line =~ /^#/
 	v = Bio::DB::Vcf.new(line)
@@ -28,41 +24,54 @@ File.open(path, 'r').each do |line|
 	end
 end
 
+
 ##Create dictionaries with the id of the fragment as key and the NUMBER of SNP as value
+
+dic_hm = {}
+dic_ht = {}
 
 hm.uniq.each do |elem|
 	dic_hm.store("#{elem}", "#{hm.count(elem).to_i}" )
 end
-# pp dic_hm
 
 ht.uniq.each do |elem|
 	dic_ht.store("#{elem}", "#{ht.count(elem).to_i}" )
 end
 
-# pp dic_ht
 
-##Create array with the ids of the correct contig order
-ordered = dic_hm.keys
+##Open the fasta file with the randomly ordered fragments and create an array with all the info there
+##From the array take only the ids and put them in a new array
+path = "/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags_shuffled.fasta"
+
+ids_s = [] 
+frags = []
+fasta_file = File.open(path)
+fasta_file.each do |line|
+	frags << line
+end
+frags.each do |line|
+	line = line.split(" ")
+	id_only = line[0]
+	if id_only.start_with?(">")
+		ids_s << id_only
+	end
+end
+
+# pp ids_s
+# ids_s = Stuff.take_ids_from_fasta(path)
 
 ##Open the fasta file with the randomly ordered fragments  and create an array with all the information
 fasta_file_shuffle = File.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags_shuffled.fasta")
-fasta_file = File.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags.fasta")
+# fasta_file = File.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags.fasta")
 frags_shuffled = ReformRatio.fasta_array(fasta_file_shuffle)
-frags = ReformRatio.fasta_array(fasta_file)
+# frags = ReformRatio.fasta_array(fasta_file)
 
 ##From the previous array take only the ids and put them in a new array
 
-ids_s = [] 
-frags_shuffled.each do |i|
-	ids_s << i.entry_id
-end
-
 ids = [] 
-frags.each do |i|
+frags_shuffled.each do |i|
 	ids << i.entry_id
 end
-
-pp ids
 
 dic_shuf_ht = {}
 dic_shuf_hm = {}
@@ -70,7 +79,7 @@ dic_shuf_hm = {}
 ##Assign the number of SNPs to each fragment in the shuffled list. 
 ##If a fragment does not have SNPs, the value assigned will be 0.
 
-ids_s.each do |frag|
+ids.each do |frag|
 	if dic_hm.has_key?(frag)
 		dic_shuf_hm.store(frag, dic_hm[frag].to_i)
 	else
@@ -81,10 +90,8 @@ ids_s.each do |frag|
 	end 
 end 
 
-# puts dic_shuf_hm
 
 ##Invert the hashes to have the SNP number as the key and all the fragments with the same SNP number together as values
-
 class Hash
   def safe_invert
     self.each_with_object( {} ) { |(key, value), out| ( out[value] ||= [] ) << key }
@@ -93,15 +100,14 @@ end
 
 dic_hm_inv = dic_shuf_hm.safe_invert
 
+
 left = []
 right = []
-##Create an array with all the SNP numbers
 
+##Create an array with all the SNP numbers
 keys = dic_hm_inv.keys.to_a
 length = keys.length
 l = (length/2).to_i
-
-# puts dichm2
 
 ##If we have an even number of SNP density values, the iteration will run for length times
 ##If we have an odd number of SNP density values, the iteration will run for length-1 times
@@ -143,19 +149,63 @@ right = right.flatten
 left = left.flatten
 left = left.reverse #we need to reverse the left array to build the distribution properly
 
+# puts right
+
+
 perm = right << left #combine together both sides of the distribution
 perm.flatten!
-# perm_dic = {}
-pp perm
+
+pp perm 
+pp ids
+
+lala =  frags.each_slice(2).to_a
+
+# pp lala 
+
+perm.each do |x|
+	# ind = perm.index(elem).to_i
+	ind = perm.each_index.select{|i| perm[i] == x}
+	puts ind
+	# ind_s = ids.index(elem).to_i
+	ind_s = ids.each_index.select{|i| ids[i] == x}
+	puts ind_s
+	lala.each do |array|
+		lala.insert(ind, array)
+		lala.delete_at(ind_s)
+	end
+end
+
+
+
+# pp lala 
+
+# frags
+	# if perm.include
+
 
 # perm.each do |frag|
-# 	if dic_hm.has_key?(frag)
-# 		perm_dic.store(frag, dic_hm[frag].to_i)
-# 	else
-# 		perm_dic.store(frag, 0)
+# 	lala.each do |array|
+# 		if array.include?(frag)
+# 			ind = perm.index(frag).to_i
+# 			ind_s = lala.index(array).to_i
+# 			lala.insert(ind, array)
+# 			lala.delete_at(ind_s)
+# 		end
+# 	end 
+# end
 # 	end
+# end
 
-distance = PDist.deviation(ids, perm)
+
+# pp "this is perm #{perm}"
+
+
+# # snp_data = ReformRatio::get_snp_data(vcf)
+# pp snp_data
+# ht, hm = ReformRatio.perm_pos(perm, snp_data)
+# pp ht
+# pp hm 
+# distance = PDist.deviation(ids, perm)
 
 # density_order, density_perm =[], []
 # density_order << dic_hm.values
