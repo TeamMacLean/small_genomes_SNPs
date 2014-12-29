@@ -8,7 +8,7 @@ require 'pp'
 require 'pdist'
 
 ##Open the vcf file and create lists of heterozygous and homozygous SNPs
-path = "/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/snps.vcf"
+path = "arabidopsis_datasets/dataset_small2kb/snps.vcf"
 hm = []
 ht = []
 File.open(path, 'r').each do |line|
@@ -38,10 +38,9 @@ ht.uniq.each do |elem|
 	dic_ht.store("#{elem}", "#{ht.count(elem).to_i}" )
 end
 
-
 ##Open the fasta file with the randomly ordered fragments and create an array with all the info there
 ##From the array take only the ids and put them in a new array
-path = "/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags_shuffled.fasta"
+path = "arabidopsis_datasets/dataset_small2kb/frags_shuffled.fasta"
 
 ids_s = [] 
 frags = []
@@ -49,29 +48,30 @@ fasta_file = File.open(path)
 fasta_file.each do |line|
 	frags << line
 end
-frags.each do |line|
-	line = line.split(" ")
-	id_only = line[0]
-	if id_only.start_with?(">")
-		ids_s << id_only
-	end
-end
+# frags.each do |line|
+# 	line = line.split(" ")
+# 	id_only = line[0]
+# 	if id_only.start_with?(">")
+# 		ids_s << id_only
+# 	end
+# end
 
-# pp ids_s
-# ids_s = Stuff.take_ids_from_fasta(path)
+# pp "ids_s #{ids_s}"
 
 ##Open the fasta file with the randomly ordered fragments  and create an array with all the information
-fasta_file_shuffle = File.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags_shuffled.fasta")
+fasta_file_shuffle = File.open("arabidopsis_datasets/dataset_small2kb/frags.fasta")
 # fasta_file = File.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags.fasta")
 frags_shuffled = ReformRatio.fasta_array(fasta_file_shuffle)
-# frags = ReformRatio.fasta_array(fasta_file)
+
+# pp frags_shuffled
 
 ##From the previous array take only the ids and put them in a new array
 
-ids = [] 
-frags_shuffled.each do |i|
-	ids << i.entry_id
-end
+
+ids, lengths = ReformRatio.fasta_id_n_lengths(frags_shuffled)
+
+# pp "ids #{ids}"
+# pp "len #{lengths}" 
 
 dic_shuf_ht = {}
 dic_shuf_hm = {}
@@ -79,16 +79,35 @@ dic_shuf_hm = {}
 ##Assign the number of SNPs to each fragment in the shuffled list. 
 ##If a fragment does not have SNPs, the value assigned will be 0.
 
+
 ids.each do |frag|
 	if dic_hm.has_key?(frag)
-		dic_shuf_hm.store(frag, dic_hm[frag].to_i)
+		dic_shuf_hm.store(frag, dic_hm[frag].to_f)
 	else
 		dic_shuf_hm.store(frag, 0)
 	end 
 	if dic_ht.has_key?(frag)
-		dic_shuf_ht.store(frag, dic_ht[frag].to_i)
+		dic_shuf_ht.store(frag, dic_ht[frag].to_f)
 	end 
 end 
+
+snps = []
+
+dic_shuf_hm.each { |id, snp| snps << snp }
+
+dic_shuf_hm_norm = {}
+
+x = 0
+l = snps.length
+Array(0..l-1).each do |i|
+	snp_norm = snps[x].to_f/lengths[x].to_f
+	keys = dic_shuf_hm.keys
+	dic_shuf_hm_norm.store(keys[x], snp_norm)
+	x +=1
+end 
+
+
+# pp dic_shuf_hm_norm
 
 
 ##Invert the hashes to have the SNP number as the key and all the fragments with the same SNP number together as values
@@ -98,129 +117,93 @@ class Hash
   end
 end
 
-dic_hm_inv = dic_shuf_hm.safe_invert
+dic_hm_inv = dic_shuf_hm_norm.safe_invert
 
+# pp dic_hm_inv
 
-left = []
-right = []
-
-##Create an array with all the SNP numbers
-keys = dic_hm_inv.keys.to_a
-length = keys.length
-l = (length/2).to_i
-
-##If we have an even number of SNP density values, the iteration will run for length times
-##If we have an odd number of SNP density values, the iteration will run for length-1 times
 ##Iteration: look for the minimum value in the array of values, that will be 0 (fragments without SNPs) and put the fragments 
 #with this value in a list. Then, the list is cut by half and each half is added to a new array (right, that will be used 
 #to reconstruct the right side of the distribution, and left, for the left side)
-list = []
-new_list = []
+list1 = []
+list2 = []
 values = []
-if l % 2 == 0
-	Array(0..l).each do |i|
-		min1 = keys.min 
-		list << dic_hm_inv.values_at(min1)
-		list.flatten!
-		l = list.length.to_i
+left = []
+right = []
+
+keys = dic_hm_inv.keys.to_a
+length = keys.length
+
+Array(1..length/2).each do |i|
+	min1 = keys.min 
+	list1 << dic_hm_inv.values_at(min1)
+	list1.flatten!
+	keys.delete(min1)
+	if list1.length.to_i >= 2 
 		d = l/2.to_i
-		l = list.each_slice(d).to_a
-		right << l[0]
-		left << l[1]
-		keys.delete(min1)
-		list = new_list
+		lu = list1.each_slice(d).to_a
+		right << lu[0]
+		left << lu[1]
+	else l < 2
+		right << list1
 	end
-else
-	Array(0..l-1).each do |i|
-		min1 = keys.min 
-		list << dic_hm_inv.values_at(min1)
-		list.flatten!
-		l = list.length.to_i
+
+	min2 = keys.min 
+	keys.delete(min2)
+	list2 << dic_hm_inv.values_at(min2)
+	list2.flatten!
+	if list2.length.to_i >= 2 
 		d = l/2.to_i
-		l = list.each_slice(d).to_a
-		right << l[0]
-		left << l[1]
-		keys.delete(min1)
-		list = new_list
+		lu = list2.each_slice(d).to_a
+		right << lu[0]
+		left << lu[1]
+	else l < 2
+		left << list2
 	end
+	list1, list2 = [], []
 end
 
+
 right = right.flatten
-left = left.flatten
+left = left.flatten.compact
 left = left.reverse #we need to reverse the left array to build the distribution properly
 
-# puts right
+# puts "This is r #{right}"
+# puts "This is l #{left}"
 
 
 perm = right << left #combine together both sides of the distribution
 perm.flatten!
 
-pp perm 
-pp ids
-
-lala =  frags.each_slice(2).to_a
-
-# pp lala 
-
-perm.each do |x|
-	# ind = perm.index(elem).to_i
-	ind = perm.each_index.select{|i| perm[i] == x}
-	puts ind
-	# ind_s = ids.index(elem).to_i
-	ind_s = ids.each_index.select{|i| ids[i] == x}
-	puts ind_s
-	lala.each do |array|
-		lala.insert(ind, array)
-		lala.delete_at(ind_s)
-	end
-end
+puts perm 
 
 
+defs = []
+data = []
 
-# pp lala 
+frags_shuffled.each do |i|
+	defs << i.definition
+	data << i.data 
 
-# frags
-	# if perm.include
-
-
-# perm.each do |frag|
-# 	lala.each do |array|
-# 		if array.include?(frag)
-# 			ind = perm.index(frag).to_i
-# 			ind_s = lala.index(array).to_i
-# 			lala.insert(ind, array)
-# 			lala.delete_at(ind_s)
-# 		end
-# 	end 
-# end
-# 	end
-# end
+end 
 
 
-# pp "this is perm #{perm}"
+defs_p = []
+data_p = []
 
+perm.each do |frag|
+	ind_i = ids.index(frag).to_i
+	defs_p << defs[ind_i]
+	data_p << data[ind_i]
+end 
 
-# # snp_data = ReformRatio::get_snp_data(vcf)
-# pp snp_data
-# ht, hm = ReformRatio.perm_pos(perm, snp_data)
-# pp ht
-# pp hm 
-# distance = PDist.deviation(ids, perm)
+fasta_perm = []
+x = 0
+Array(0..perm.length-1).each do |i|
+	fasta_perm << defs_p[x]
+	fasta_perm << data_p[x]
+	x += 1
+end 
 
-# density_order, density_perm =[], []
-# density_order << dic_hm.values
-# density_perm << perm_dic.values
+pp fasta 
 
-
-##Compare two halfs of the ordered genome with the unordered one. 
-
-
-# pp dichm2
-# pp "right is #{right}"
-# # pp "right is #{right}"
-# pp "left is #{left}"
-# puts l.length
-# puts r.length
-
-# puts values 
 
