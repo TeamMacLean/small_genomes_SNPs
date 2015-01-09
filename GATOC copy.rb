@@ -183,22 +183,44 @@ end
 # Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
 # Output 2: A saved figure of the algorithm's performance
 # Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
+def self.evolve(fasta_file, vcf_file, parameters)
+	opts = {
+		:fitness_method => 'count_ratio', # String of the fitness method to use from FitnessScore class
+		:expected_ratios => expected_ratios, # Array of expected ratios (floats) of homozygous to heterozygous SNPs for each division of the genome
+		:div => div, # Number of breaks (divisions) in the genome to count the number of SNPs in. (max_hyp and count_ratio fitness methods require this).
+		:gen => 10000, # Integer of desired number of generations - the number of times a new population is created from an old one
+		:pop_size => 10, # Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
+		:select_num => 5, # Number of permutations to select from each generation
+		:c_mut => 5, # Integer of the desired number of chunk mutant permutations in each new population
+		:s_mut => 4, # Integer of the desired number of swap mutant permutations in each new population
+		:save => 2, # Integer of the desired number of the best permutations from each population, to be included in the next one
+		:ran => 2, # Integer of the desired number of randomly shuffled permutations in each new population
+		:loc => '~/small_genomes_SNPs/arabidopsis_datasets', # Location to save output files to
+		:dataset => ARGV[0], # The sub folder containing fasta and vcf files
+		:run => ARGV[1], # The name you'd like to assign this run of the algorithm
+		:start_pop => nil, # Population array of permutations (arrays of FASTA format fragments) to start from - THIS IS USEFUL WHILST TESTING ALGORITHM
+		:start_gen => 0, # Generation that the algorithm ist starting from
+		:auc => 5, # Quit algorithm if area under curve of fitness improvement is < auc% better for this auc_gen generations than previous auc_gen
+		:auc_gen => 5, # See above
+		:restart_zero => nil # Should be set to anything other than nil, if the algorithm needs to be restarted from a generation zero population
+		}.merge!(parameters)
 
-@expected_ratios = opts[:expected_ratios]
-@div = opts[:div].to_i
 
-snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
-fasta = ReformRatio::fasta_array(fasta_file) # array of fasta format fragments
-genome_length = ReformRatio::genome_length(fasta_file)
+	@expected_ratios = opts[:expected_ratios]
+	@div = opts[:div].to_i
 
-if opts[:start_pop] == nil
+	snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
+	fasta = ReformRatio::fasta_array(fasta_file) # array of fasta format fragments
+	genome_length = ReformRatio::genome_length(fasta_file)
+
+	if opts[:start_pop] == nil
 	pop = initial_population(fasta, opts[:pop_size]) # create initial population
-else
+	else
 	pop = opts[:start_pop] # use a pre-made starting population
-end
+	end
 
-gen, last_best, auc = opts[:start_gen], [], nil
-opts[:gen].times do
+	gen, last_best, auc = opts[:start_gen], [], nil
+	opts[:gen].times do
 
 	if opts[:start_gen] == 0 && opts[:restart_zero] != nil && gen == 0 # Enables restart of algorithm, where only generation 0 is already complete
 		gen+=1
@@ -211,7 +233,7 @@ opts[:gen].times do
 	end
 
 	puts "Gen#{gen}\n Fitness Score = #{pop_fits[-1][0]}" # print output to show improvement of best permutation over generations as algorithm runs
-#####CSV file generation (Pilar)####################################################################################################################
+	#####CSV file generation (Pilar)####################################################################################################################
 	path = "arabidopsis_datasets/#{opts[:dataset]}/#{opts[:run]}/table.csv"
 
 	# CSV.open(path, "wb") do |csv|
@@ -222,7 +244,7 @@ opts[:gen].times do
 		p = gen
 		csv << [p, q]
 	end
-###################
+	###################
 		
 	ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data) # get the SNP distributions for the best permutation in the generation
 
@@ -233,7 +255,7 @@ opts[:gen].times do
 			WriteIt::write_txt("gen_#{gen}_ht", ht)
 		end
 	end
-	
+
 	pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
 	gen+=1
 
@@ -254,9 +276,10 @@ opts[:gen].times do
 		end
 		last_best = []
 	end
-	
+
 	if gen >= opts[:gen] # Quit the algorithm after the specified number of generations is up
 		then break
 	end
 	Signal.trap("PIPE", "EXIT")
+	end
 end

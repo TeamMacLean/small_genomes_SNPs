@@ -22,6 +22,7 @@ ran = ARGV[9].to_i # Number of random permutations in each generation
 ## Files ################################################
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
 fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
+ordered_file = "arabidopsis_datasets/#{dataset}/frags_ordered2.fasta"
 location = 'small_genomes_SNPs/arabidopsis_datasets'
 #############################################################
 
@@ -87,6 +88,6 @@ puts "Array of expected ratios created"
 
 
 ### Run the algorithm ### (:start_pop should be set to nil, unless the algorithm needs to restart)
-GATOC::evolve(fasta_file, vcf_file, :fitness_method => fitness_method, :expected_ratios => expected_ratios, :div => div, :gen => gen, :pop_size => pop_size,
+GATOC::evolve(fasta_file, ordered_file, vcf_file, :fitness_method => fitness_method, :expected_ratios => expected_ratios, :div => div, :gen => gen, :pop_size => pop_size,
 	:select_num => select_num, :c_mut => c_mut, :s_mut => s_mut, :save => save, :ran => ran, :loc => location,
 	:start_pop => pop, :start_gen => restart_gen[0], :auc => 1, :auc_gen => 20, :restart_zero => restart_zero[0])

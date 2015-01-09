@@ -30,9 +30,11 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 0: Array of Bio::FastaFormat entries
 	# Input 1: Integer of the desired population size
 	# Output: Population - Array of size "size", where each element is an array of a shuffled permutation of the input 0 array and the string 'random', in an array.
-	def self.initial_population(fasta_ordered)
+	def self.initial_population(fasta, size)
 		population = []
-		population = fasta_ordered
+		size.times do
+			population << [fasta.shuffle, 'random']
+		end
 		return population
 	end
 
@@ -118,10 +120,26 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 5: Output 3 of select
 	# Output: txt files with data interpretable by text-table gem AND txt files for each permutation
 	def self.save_perms(pop_fits, location, dataset, run, gen, types)
-		if gen != 0
-			ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
-			WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_best_permutation", [pop_fits[-1][0], ids].flatten) # fitness and ids
-			
+		# Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}/Gen#{gen}"))
+		Dir.chdir(File.join(Dir.home, "#{location}")) do
+	# 		table_data = [['Permutation', 'Fitness Score', 'Type', 'FASTA ids']]
+	# 		x = 1
+	# 		pop_fits.each do |fitness, permutation|
+	# 			table_data << ["permutation#{x}", fitness, types[x-1][0], ReformRatio::fasta_id_n_lengths(permutation)[0].join(", ")]
+	# 			x+=1
+	# 		end
+	# 		WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}/table_data", table_data)
+
+			# x = 1
+			# pop_fits.each do |fitness, perm|
+			# 	ids = ReformRatio::fasta_id_n_lengths(perm)[0]
+			# 	WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_permutation#{x}", [fitness, ids].flatten)
+			# 	x+=1
+			# end
+			if gen != 0
+				ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
+				WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_best_permutation", [pop_fits[-1][0], ids].flatten) # fitness and ids
+			end
 		end
 	end
 
@@ -145,7 +163,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 1: A saved .txt file of the fragment identifiers, of a permutation with a fitness that suggests it is the correct order
 	# Output 2: A saved figure of the algorithm's performance
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
-	def self.evolve(fasta_file, ordered_file, vcf_file, parameters)
+	def self.evolve(fasta_file, vcf_file, parameters)
 		opts = {
 			:fitness_method => 'max_density', # String of the fitness method to use from FitnessScore class
 			:expected_ratios => nil, # Array of expected ratios (floats) of homozygous to heterozygous SNPs for each division of the genome
@@ -172,16 +190,13 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 		fasta = ReformRatio::fasta_array(fasta_file) # array of fasta format fragments
-		fasta_ordered = ReformRatio::fasta_array(ordered_file)
 		genome_length = ReformRatio::genome_length(fasta_file)
 
-		pop = fasta_ordered
-		
-		# if opts[:start_pop] == nil
-		# 	pop = fasta_ordered # create initial population
-		# else
-		# 	pop = fasta_ordered # use a pre-made starting population
-		# end
+		if opts[:start_pop] == nil
+			pop = initial_population(fasta, opts[:pop_size]) # create initial population
+		else
+			pop = opts[:start_pop] # use a pre-made starting population
+		end
 
 		gen, last_best, auc = opts[:start_gen], [], nil
 		opts[:gen].times do
@@ -192,26 +207,26 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 			pop_fits, leftover, initial_pf, types = select(pop, snp_data, opts[:select_num], genome_length, opts[:fitness_method]) # select fittest permutations in population
 
-			# unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
-			# 	save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types) # save the permutations from this generation, with fitness scores
-			# end
+			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
+				save_perms(initial_pf, opts[:loc], opts[:dataset], opts[:run], gen, types) # save the permutations from this generation, with fitness scores
+			end
 
 			puts "Gen#{gen}\n Fitness Score = #{pop_fits[-1][0]}" # print output to show improvement of best permutation over generations as algorithm runs
-
 #####CSV file generation (Pilar)####################################################################################################################
 			path = "arabidopsis_datasets/#{opts[:dataset]}/#{opts[:run]}/table.csv"
+
 			# CSV.open(path, "wb") do |csv|
-			# 	csv << ["Generation", "Best fitness score"]
+				# csv << ["Generation", "Best fitness score"]
 			# end
 			CSV.open(path, "ab") do |csv|
 				q = pop_fits [-1][0]
 				p = gen
 				csv << [p, q]
 			end
-#####################################################
-
+###################
+				
 			ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data) # get the SNP distributions for the best permutation in the generation
-
+			puts "This is it #{pop_fits[-1][1]}"
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))
 				Dir.chdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists")) do
@@ -220,8 +235,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 			
-			# pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
-			# gen+=1
+			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
+			gen+=1
  
 			last_best << pop_fits[-1][0]
 			if last_best.length == opts[:auc_gen] 

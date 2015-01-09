@@ -38,4 +38,16 @@ class Stuff
 		end
 		return ids_s
 	end
+
+	def self.div(a, b)
+		x = 0
+		c = []
+		l = a.length
+		Array(0..l).each do |i|
+			c << a[x].to_f/b[x].to_f
+			x += 1
+		return c 
+	end
+end
+
 end

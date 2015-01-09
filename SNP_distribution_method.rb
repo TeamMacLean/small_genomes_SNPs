@@ -59,11 +59,11 @@ end
 # pp "ids_s #{ids_s}"
 
 ##Open the fasta file with the randomly ordered fragments  and create an array with all the information
-fasta_file_shuffle = File.open("arabidopsis_datasets/dataset_small2kb/frags.fasta")
+fasta_file_shuffle = File.open("arabidopsis_datasets/dataset_small2kb/frags_shuffled.fasta")
 # fasta_file = File.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags.fasta")
 frags_shuffled = ReformRatio.fasta_array(fasta_file_shuffle)
 
-# pp frags_shuffled
+pp frags_shuffled
 
 ##From the previous array take only the ids and put them in a new array
 
@@ -174,7 +174,7 @@ left = left.reverse #we need to reverse the left array to build the distribution
 perm = right << left #combine together both sides of the distribution
 perm.flatten!
 
-puts perm 
+# puts perm 
 
 
 defs = []
@@ -204,6 +204,31 @@ Array(0..perm.length-1).each do |i|
 	x += 1
 end 
 
-pp fasta 
+
+fasta_perm.each do |line|
+	if line.start_with?("\n")
+		line[0] = '' 
+	else 
+		line.insert(0, ">")
+	end
+end	
+
+
+File.open("arabidopsis_datasets/dataset_small2kb/frags_ordered3.fasta", "w+") do |f|
+  fasta_perm.each { |element| f.puts(element) }
+end
+
+File.open("arabidopsis_datasets/dataset_small2kb/frags_ordered3.fasta")
+
+file = File.open("arabidopsis_datasets/dataset_small2kb/frags_ordered2.fasta")
+
+fasta_file = File.open("arabidopsis_datasets/dataset_small2kb/frags.fasta")
+
+fasta2 = ReformRatio.fasta_array(fasta_file)
+
+fasta = ReformRatio.fasta_array(file)
+
+pp fasta2
+pp fasta
 
 
