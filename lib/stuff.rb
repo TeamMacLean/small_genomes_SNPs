@@ -39,15 +39,24 @@ class Stuff
 		return ids_s
 	end
 
-	def self.div(a, b)
-		x = 0
-		c = []
-		l = a.length
-		Array(0..l).each do |i|
-			c << a[x].to_f/b[x].to_f
-			x += 1
-		return c 
-	end
-end
 
+	def self.shuffle_ends(fasta)
+		l = fasta.length/6
+		l = l.to_i 
+		master = fasta.each_slice(l).to_a
+		new_array = []
+		x = 0
+		l.times do
+			new_array = (master[x] << master[-(x+1)]).flatten!.shuffle 
+			lu = new_array.each_slice(2).to_a
+			master.delete_at(x)
+			master.insert(x, lu[0])
+			master.delete_at(-(x+1))
+			master.insert(-(x+1), lu[1])
+			new_array = []
+			lu = []
+			x =+ 1
+		end
+		return master.flatten! 
+	end
 end

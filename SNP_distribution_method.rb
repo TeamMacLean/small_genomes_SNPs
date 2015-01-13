@@ -7,11 +7,16 @@ require 'Bio'
 require 'pp'
 require 'pdist'
 
+dataset = ARGV[0] # Name of dataset directory in 'fragmented_genome_with_snps/arabidopsis_datasets'
+
+vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
+fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
+fasta_shuffle = "arabidopsis_datasets/#{dataset}/frags_shuffled.fasta"
+
 ##Open the vcf file and create lists of heterozygous and homozygous SNPs
-path = "arabidopsis_datasets/dataset_small2kb/snps.vcf"
 hm = []
 ht = []
-File.open(path, 'r').each do |line|
+File.open(vcf_file, 'r').each do |line|
 	next if line =~ /^#/
 	v = Bio::DB::Vcf.new(line)
 	a = line.split("\t")
@@ -40,11 +45,10 @@ end
 
 ##Open the fasta file with the randomly ordered fragments and create an array with all the info there
 ##From the array take only the ids and put them in a new array
-path = "arabidopsis_datasets/dataset_small2kb/frags_shuffled.fasta"
 
 ids_s = [] 
 frags = []
-fasta_file = File.open(path)
+fasta_file = File.open(fasta_shuffle)
 fasta_file.each do |line|
 	frags << line
 end
@@ -59,27 +63,15 @@ end
 # pp "ids_s #{ids_s}"
 
 ##Open the fasta file with the randomly ordered fragments  and create an array with all the information
-fasta_file_shuffle = File.open("arabidopsis_datasets/dataset_small2kb/frags_shuffled.fasta")
-# fasta_file = File.open("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/dataset_small2kb/frags.fasta")
-frags_shuffled = ReformRatio.fasta_array(fasta_file_shuffle)
-
-pp frags_shuffled
+frags_shuffled = ReformRatio.fasta_array(fasta_shuffle)
 
 ##From the previous array take only the ids and put them in a new array
-
-
 ids, lengths = ReformRatio.fasta_id_n_lengths(frags_shuffled)
-
-# pp "ids #{ids}"
-# pp "len #{lengths}" 
-
-dic_shuf_ht = {}
-dic_shuf_hm = {}
 
 ##Assign the number of SNPs to each fragment in the shuffled list. 
 ##If a fragment does not have SNPs, the value assigned will be 0.
-
-
+dic_shuf_ht = {}
+dic_shuf_hm = {}
 ids.each do |frag|
 	if dic_hm.has_key?(frag)
 		dic_shuf_hm.store(frag, dic_hm[frag].to_f)
@@ -107,9 +99,6 @@ Array(0..l-1).each do |i|
 end 
 
 
-# pp dic_shuf_hm_norm
-
-
 ##Invert the hashes to have the SNP number as the key and all the fragments with the same SNP number together as values
 class Hash
   def safe_invert
@@ -118,8 +107,6 @@ class Hash
 end
 
 dic_hm_inv = dic_shuf_hm_norm.safe_invert
-
-# pp dic_hm_inv
 
 ##Iteration: look for the minimum value in the array of values, that will be 0 (fragments without SNPs) and put the fragments 
 #with this value in a list. Then, the list is cut by half and each half is added to a new array (right, that will be used 
@@ -167,14 +154,8 @@ right = right.flatten
 left = left.flatten.compact
 left = left.reverse #we need to reverse the left array to build the distribution properly
 
-# puts "This is r #{right}"
-# puts "This is l #{left}"
-
-
 perm = right << left #combine together both sides of the distribution
 perm.flatten!
-
-# puts perm 
 
 
 defs = []
@@ -185,8 +166,6 @@ frags_shuffled.each do |i|
 	data << i.data 
 
 end 
-
-
 defs_p = []
 data_p = []
 
@@ -214,21 +193,21 @@ fasta_perm.each do |line|
 end	
 
 
-File.open("arabidopsis_datasets/dataset_small2kb/frags_ordered3.fasta", "w+") do |f|
+File.open("arabidopsis_datasets/#{dataset}/frags_ordered.fasta", "w+") do |f|
   fasta_perm.each { |element| f.puts(element) }
 end
 
-File.open("arabidopsis_datasets/dataset_small2kb/frags_ordered3.fasta")
 
-file = File.open("arabidopsis_datasets/dataset_small2kb/frags_ordered2.fasta")
+file = File.open("arabidopsis_datasets/#{dataset}/frags_ordered.fasta")
 
-fasta_file = File.open("arabidopsis_datasets/dataset_small2kb/frags.fasta")
+# fasta = ReformRatio.fasta_array(file)
 
-fasta2 = ReformRatio.fasta_array(fasta_file)
+list = [1, 2, 3, 4, 5, 6, 7, 8]
 
-fasta = ReformRatio.fasta_array(file)
+d = list.length/2 
+la = list.each_slice(d).to_a
+right << la[0]
+left << la[1].reverse
 
-pp fasta2
-pp fasta
-
-
+pp "this is r #{right}"
+pp "this is l #{left}"

@@ -3,10 +3,12 @@ class GATOC # Genetic Algorithm To Order Contigs
 	require_relative 'fitness_score'
 	require_relative 'write_it'
 	require_relative 'reform_ratio'
+	require_relative 'Stuff'
 	require 'pmeth'
 	require 'rinruby'
 	require 'pp'
 	require 'csv'
+
 
 	# Input 0: A permutation array of Bio::FastaFormat entries (contig arrangement)
 	# Input 1: Array of all the outputs from ReformRatio.get_snp_data method
@@ -30,9 +32,12 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 0: Array of Bio::FastaFormat entries
 	# Input 1: Integer of the desired population size
 	# Output: Population - Array of size "size", where each element is an array of a shuffled permutation of the input 0 array and the string 'random', in an array.
-	def self.initial_population(fasta_ordered)
+	def self.initial_population(fasta, size)
 		population = []
-		population = fasta_ordered
+		size.times do
+			f = Stuff.shuffle_ends(fasta)
+			population << [f, 'random']
+		end
 		return population
 	end
 
@@ -118,10 +123,26 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Input 5: Output 3 of select
 	# Output: txt files with data interpretable by text-table gem AND txt files for each permutation
 	def self.save_perms(pop_fits, location, dataset, run, gen, types)
-		if gen != 0
-			ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
-			WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_best_permutation", [pop_fits[-1][0], ids].flatten) # fitness and ids
-			
+		# Dir.mkdir(File.join(Dir.home, "#{location}/#{dataset}/#{run}/Gen#{gen}"))
+		Dir.chdir(File.join(Dir.home, "#{location}")) do
+	# 		table_data = [['Permutation', 'Fitness Score', 'Type', 'FASTA ids']]
+	# 		x = 1
+	# 		pop_fits.each do |fitness, permutation|
+	# 			table_data << ["permutation#{x}", fitness, types[x-1][0], ReformRatio::fasta_id_n_lengths(permutation)[0].join(", ")]
+	# 			x+=1
+	# 		end
+	# 		WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}/table_data", table_data)
+
+			# x = 1
+			# pop_fits.each do |fitness, perm|
+			# 	ids = ReformRatio::fasta_id_n_lengths(perm)[0]
+			# 	WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_permutation#{x}", [fitness, ids].flatten)
+			# 	x+=1
+			# end
+			if gen != 0
+				ids = ReformRatio::fasta_id_n_lengths(pop_fits[-1][1])[0]
+				WriteIt::write_txt("#{dataset}/#{run}/Gen#{gen}_best_permutation", [pop_fits[-1][0], ids].flatten) # fitness and ids
+			end
 		end
 	end
 
@@ -147,17 +168,17 @@ class GATOC # Genetic Algorithm To Order Contigs
 	# Output 3: A saved figure of the best permuation's homozygous/heterozygous SNP density ratio across the genome, assuming the fragment permutation is correct
 	def self.evolve(fasta_file, ordered_file, vcf_file, parameters)
 		opts = {
-			:fitness_method => 'max_density', # String of the fitness method to use from FitnessScore class
+			:fitness_method => 'count_ratio', # String of the fitness method to use from FitnessScore class
 			:expected_ratios => nil, # Array of expected ratios (floats) of homozygous to heterozygous SNPs for each division of the genome
 			:div => nil, # Number of breaks (divisions) in the genome to count the number of SNPs in. (max_hyp and count_ratio fitness methods require this).
-			:gen => 10000000000, # Integer of desired number of generations - the number of times a new population is created from an old one
-			:pop_size => 100, # Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
-			:select_num => 50, # Number of permutations to select from each generation
-			:c_mut => 50, # Integer of the desired number of chunk mutant permutations in each new population
-			:s_mut => 40, # Integer of the desired number of swap mutant permutations in each new population
+			:gen => 100, # Integer of desired number of generations - the number of times a new population is created from an old one
+			:pop_size => 10, # Integer of desired size of each population (array of arrays where each sub array is a permutation of the fragments (Bio::FastaFormat entries))
+			:select_num => 5, # Number of permutations to select from each generation
+			:c_mut => 5, # Integer of the desired number of chunk mutant permutations in each new population
+			:s_mut => 4, # Integer of the desired number of swap mutant permutations in each new population
 			:save => 8, # Integer of the desired number of the best permutations from each population, to be included in the next one
 			:ran => 2, # Integer of the desired number of randomly shuffled permutations in each new population
-			:loc => '~/fragmented_genome_with_snps/arabidopsis_datasets', # Location to save output files to
+			:loc => '~/small_genomes_SNPs/arabidopsis_datasets', # Location to save output files to
 			:dataset => ARGV[0], # The sub folder containing fasta and vcf files
 			:run => ARGV[1], # The name you'd like to assign this run of the algorithm
 			:start_pop => nil, # Population array of permutations (arrays of FASTA format fragments) to start from - THIS IS USEFUL WHILST TESTING ALGORITHM
@@ -172,16 +193,14 @@ class GATOC # Genetic Algorithm To Order Contigs
 
 		snp_data = ReformRatio::get_snp_data(vcf_file) # array of vcf frag ids, snp positions (fragments with snps), hash of each frag from vcf with no. snps, array of info field
 		fasta = ReformRatio::fasta_array(fasta_file) # array of fasta format fragments
-		fasta_ordered = ReformRatio::fasta_array(ordered_file)
+		fasta_ordered =  ReformRatio::fasta_array(ordered_file)
 		genome_length = ReformRatio::genome_length(fasta_file)
 
-		pop = fasta_ordered
-		
-		# if opts[:start_pop] == nil
-		# 	pop = fasta_ordered # create initial population
-		# else
-		# 	pop = fasta_ordered # use a pre-made starting population
-		# end
+		if opts[:start_pop] == nil
+			pop = initial_population(fasta_ordered , opts[:pop_size]) # create initial population
+		else
+			pop = opts[:start_pop] # use a pre-made starting population
+		end
 
 		gen, last_best, auc = opts[:start_gen], [], nil
 		opts[:gen].times do
@@ -220,8 +239,8 @@ class GATOC # Genetic Algorithm To Order Contigs
 				end
 			end
 			
-			# pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
-			# gen+=1
+			pop = new_population(pop_fits, opts[:pop_size], opts[:c_mut], opts[:s_mut], opts[:save], opts[:ran], opts[:select_num], leftover)
+			gen+=1
  
 			last_best << pop_fits[-1][0]
 			if last_best.length == opts[:auc_gen] 
