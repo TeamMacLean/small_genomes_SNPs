@@ -7,7 +7,7 @@ require 'Bio'
 require 'pp'
 require 'pdist'
 
-dataset = ARGV[0] # Name of dataset directory in 'fragmented_genome_with_snps/arabidopsis_datasets'
+dataset = ARGV[0] # Name of dataset directory in 'small_genomes_SNPs/arabidopsis_datasets'
 
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
 fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
@@ -52,15 +52,7 @@ fasta_file = File.open(fasta_shuffle)
 fasta_file.each do |line|
 	frags << line
 end
-# frags.each do |line|
-# 	line = line.split(" ")
-# 	id_only = line[0]
-# 	if id_only.start_with?(">")
-# 		ids_s << id_only
-# 	end
-# end
 
-# pp "ids_s #{ids_s}"
 
 ##Open the fasta file with the randomly ordered fragments  and create an array with all the information
 frags_shuffled = ReformRatio.fasta_array(fasta_shuffle)
@@ -151,6 +143,7 @@ end
 
 
 right = right.flatten
+
 left = left.flatten.compact
 left = left.reverse #we need to reverse the left array to build the distribution properly
 
@@ -158,23 +151,25 @@ perm = right << left #combine together both sides of the distribution
 perm.flatten!
 
 
-defs = []
-data = []
+##Take IDs, lenght and sequence from the shuffled fasta file and add them to the permutation array 
+
+defs, data= [], []
 
 frags_shuffled.each do |i|
 	defs << i.definition
 	data << i.data 
-
 end 
-defs_p = []
-data_p = []
+
+defs_p, data_p = [], [] 
 
 perm.each do |frag|
-	ind_i = ids.index(frag).to_i
-	defs_p << defs[ind_i]
-	data_p << data[ind_i]
+	index_frag = ids.index(frag).to_i
+	defs_p << defs[index_frag]
+	data_p << data[index_frag]
 end 
 
+
+###Create fasta array with the information above 
 fasta_perm = []
 x = 0
 Array(0..perm.length-1).each do |i|
@@ -192,22 +187,9 @@ fasta_perm.each do |line|
 	end
 end	
 
-
 File.open("arabidopsis_datasets/#{dataset}/frags_ordered.fasta", "w+") do |f|
   fasta_perm.each { |element| f.puts(element) }
 end
 
 
-file = File.open("arabidopsis_datasets/#{dataset}/frags_ordered.fasta")
 
-# fasta = ReformRatio.fasta_array(file)
-
-list = [1, 2, 3, 4, 5, 6, 7, 8]
-
-d = list.length/2 
-la = list.each_slice(d).to_a
-right << la[0]
-left << la[1].reverse
-
-pp "this is r #{right}"
-pp "this is l #{left}"

@@ -1,6 +1,9 @@
 
 #encoding: utf-8
 
+require_relative 'reform_ratio'
+require 'Bio'
+
 ##Open the vcf file and create lists of heterozygous and homozygous SNPs
 
 class Stuff
