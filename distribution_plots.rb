@@ -47,4 +47,3 @@ Array(0..gen.to_i).each do |i|
 			'Approximated ratio of homozygous to heterozygous SNP density', ylim_hyp[0])
 	end
 end
-
