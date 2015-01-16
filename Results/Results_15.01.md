@@ -23,3 +23,8 @@ Arabidopsis chromosome 1
 - Location of causal mutation in correctly ordered genome: 10028
 
 - Candidate SNP position in permutation: 10310
+
+Next
+===
+- Focus on new method and plan multirun experiments to test efficiency to order contigs. 
+- Try to think of why to focus on the 
