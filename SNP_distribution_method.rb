@@ -14,34 +14,10 @@ fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
 fasta_shuffle = "arabidopsis_datasets/#{dataset}/frags_shuffled.fasta"
 
 ##Open the vcf file and create lists of heterozygous and homozygous SNPs
-hm = []
-ht = []
-File.open(vcf_file, 'r').each do |line|
-	next if line =~ /^#/
-	v = Bio::DB::Vcf.new(line)
-	a = line.split("\t")
-	first =  a.first
-	last = a.last
-	if last == "AF=0.5\n"
-		ht << first
-	elsif last == "AF=1.0\n"
-		hm << first
-	end
-end
-
+hm, ht = Stuff.snps_in_vcf(vcf_file)
 
 ##Create dictionaries with the id of the fragment as key and the NUMBER of SNP as value
-
-dic_hm = {}
-dic_ht = {}
-
-hm.uniq.each do |elem|
-	dic_hm.store("#{elem}", "#{hm.count(elem).to_i}" )
-end
-
-ht.uniq.each do |elem|
-	dic_ht.store("#{elem}", "#{ht.count(elem).to_i}" )
-end
+dic_hm, dic_ht = Stuff.dic_snps_fasta(hm, ht)
 
 ##Open the fasta file with the randomly ordered fragments and create an array with all the info there
 ##From the array take only the ids and put them in a new array
@@ -62,22 +38,11 @@ ids, lengths = ReformRatio.fasta_id_n_lengths(frags_shuffled)
 
 ##Assign the number of SNPs to each fragment in the shuffled list. 
 ##If a fragment does not have SNPs, the value assigned will be 0.
-dic_shuf_ht = {}
-dic_shuf_hm = {}
-ids.each do |frag|
-	if dic_hm.has_key?(frag)
-		dic_shuf_hm.store(frag, dic_hm[frag].to_f)
-	else
-		dic_shuf_hm.store(frag, 0)
-	end 
-	if dic_ht.has_key?(frag)
-		dic_shuf_ht.store(frag, dic_ht[frag].to_f)
-	end 
-end 
 
-snps = []
 
-dic_shuf_hm.each { |id, snp| snps << snp }
+
+dic_shuf_hm, dic_shuf_ht, snps = Stuff.define_snps(ids, dic_hm, dic_ht)
+
 
 dic_shuf_hm_norm = {}
 
@@ -90,6 +55,7 @@ Array(0..l-1).each do |i|
 	x +=1
 end 
 
+puts dic_shuf_hm_norm
 
 ##Invert the hashes to have the SNP number as the key and all the fragments with the same SNP number together as values
 class Hash
@@ -117,25 +83,24 @@ Array(1..length/2).each do |i|
 	list1 << dic_hm_inv.values_at(min1)
 	list1.flatten!
 	keys.delete(min1)
-	if list1.length.to_i >= 2 
+	if list1.length.to_i % 2 == 0 
 		d = l/2.to_i
 		lu = list1.each_slice(d).to_a
 		right << lu[0]
 		left << lu[1]
-	else l < 2
+	else 
 		right << list1
 	end
-
 	min2 = keys.min 
 	keys.delete(min2)
 	list2 << dic_hm_inv.values_at(min2)
 	list2.flatten!
-	if list2.length.to_i >= 2 
+	if list2.length.to_i % 2 == 0
 		d = l/2.to_i
 		lu = list2.each_slice(d).to_a
 		right << lu[0]
 		left << lu[1]
-	else l < 2
+	else 
 		left << list2
 	end
 	list1, list2 = [], []
@@ -144,11 +109,52 @@ end
 
 right = right.flatten
 
+# pp "This is r #{right}"
+puts right.length
+
 left = left.flatten.compact
 left = left.reverse #we need to reverse the left array to build the distribution properly
 
+# pp "This is l #{left}"
+puts left.length
+
+
 perm = right << left #combine together both sides of the distribution
 perm.flatten!
+
+
+# l = perm.length/10.to_i
+# q = l - 1
+
+# master = perm.each_slice(l).to_a
+
+# new_array = []
+# x = 0
+
+# q.times do
+# 	puts master[x]
+# 	puts master[-(x+1)]
+# 	new_array = (master[x] << master[-(x+1)]).flatten!.shuffle 
+# 	new_array2 = (master[x] << master[-(x+)]).flatten!.shuffle 
+# 	ln = new_array.length/2
+# 	lu = new_array.each_slice(ln).to_a
+# 	ln = new_array.length/2
+# 	lu = new_array.each_slice(ln).to_a
+# 	master.delete_at(x)
+# 	master.insert(x, lu[0])
+# 	master.delete_at(-(x+1))
+# 	master.insert(-(x+1), lu[1])
+# 	new_array = []
+# 	lu = []
+# 	x =+ 1
+# end
+
+
+# pp "this is master final #{master.flatten}"
+
+
+
+
 
 
 ##Take IDs, lenght and sequence from the shuffled fasta file and add them to the permutation array 
@@ -191,5 +197,17 @@ File.open("arabidopsis_datasets/#{dataset}/frags_ordered.fasta", "w+") do |f|
   fasta_perm.each { |element| f.puts(element) }
 end
 
+fasta_ordered = "arabidopsis_datasets/#{dataset}/frags_ordered.fasta"
+frags_ordered = ReformRatio.fasta_array(fasta_ordered)
 
 
+snp_data = ReformRatio.get_snp_data(vcf_file)
+
+het_snps, hom_snps = ReformRatio.perm_pos(frags_ordered, snp_data)
+
+Dir.mkdir("arabidopsis_datasets/#{dataset}/Perm_snps")
+
+Dir.chdir("arabidopsis_datasets/#{dataset}/Perm_snps") do
+	WriteIt::write_txt("perm_hm", hom_snps) # save the SNP distributions for the best permutation in the generation
+	WriteIt::write_txt("perm_ht", het_snps)
+end

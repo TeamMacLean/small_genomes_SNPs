@@ -1,13 +1,13 @@
 
 #encoding: utf-8
-
 require_relative 'reform_ratio'
 require 'Bio'
 
 ##Open the vcf file and create lists of heterozygous and homozygous SNPs
 
 class Stuff
-	def self.get_snp_data(vcf_file)
+	def self.snps_in_vcf(vcf_file)
+
 		hm = []
 		ht = []
 		File.open(vcf_file, 'r').each do |line|
@@ -21,35 +21,69 @@ class Stuff
 			elsif last == "AF=1.0\n"
 				hm << first
 			end
-		return ht, hm
 		end
+		return hm, ht
 	end
 
-	def self.take_ids_from_fasta(fasta_file)
-		ids_s = [] 
-		frags = []
-		fasta_file = File.open(fasta_file)
-		fasta_file.each do |line|
-			frags << line
+	# def self.take_ids_from_fasta(fasta_file)
+	# 	ids_s = [] 
+	# 	frags = []
+	# 	fasta_file = File.open(fasta_file)
+	# 	fasta_file.each do |line|
+	# 		frags << line
+	# 	end
+	# 	frags.each do |line|
+	# 		line = line.split(" ")
+	# 		id_only = line[0]
+	# 		if id_only.start_with?(">")
+	# 			ids_s << id_only
+	# 		end
+	# 	end
+	# 	return ids_s
+	# end
+
+	def self.dic_snps_fasta(hm, ht)
+		dic_hm = {}
+		dic_ht = {}
+
+		hm.uniq.each do |elem|
+			dic_hm.store("#{elem}", "#{hm.count(elem).to_i}" )
 		end
-		frags.each do |line|
-			line = line.split(" ")
-			id_only = line[0]
-			if id_only.start_with?(">")
-				ids_s << id_only
-			end
+
+		ht.uniq.each do |elem|
+			dic_ht.store("#{elem}", "#{ht.count(elem).to_i}" )
 		end
-		return ids_s
+		return dic_hm, dic_ht
+	end
+
+
+	def self.define_snps(ids, dic_hm, dic_ht)
+		dic_shuf_ht = {}
+		dic_shuf_hm = {}
+		ids.each do |frag|
+			if dic_hm.has_key?(frag)
+				dic_shuf_hm.store(frag, dic_hm[frag].to_f)
+			else
+				dic_shuf_hm.store(frag, 0)
+			end 
+			if dic_ht.has_key?(frag)
+				dic_shuf_ht.store(frag, dic_ht[frag].to_f)
+			end 
+		end 
+		snps = []
+		dic_shuf_hm.each { |id, snp| snps << snp }
+		return dic_shuf_hm, dic_shuf_ht, snps
 	end
 
 
 	def self.shuffle_ends(fasta)
-		l = fasta.length/6
-		l = l.to_i 
+		l = fasta.length/10.to_i
+		q = l - 1
 		master = fasta.each_slice(l).to_a
 		new_array = []
+		new_array2 = []
 		x = 0
-		l.times do
+		1.times do
 			new_array = (master[x] << master[-(x+1)]).flatten!.shuffle 
 			lu = new_array.each_slice(2).to_a
 			master.delete_at(x)

@@ -6,8 +6,6 @@ require_relative 'lib/reform_ratio'
 require_relative 'lib/fitness_score'
 
 dataset = ARGV[0]
-run = ARGV[1]
-gen = ARGV[2]
 n = 1048576*4
 
 genome_length = ReformRatio::genome_length("arabidopsis_datasets/#{dataset}/frags.fasta")
@@ -24,8 +22,8 @@ Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset
 	peak =  LocateMutation.find_peak(hyp, n) # Find the peak in the approximated (hypothetical SNP) distribution
 	causal = LocateMutation.closest_snp(peak, hm)
 
-	perm_hm = WriteIt.file_to_ints_array("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}_lists/gen_#{gen}_hm.txt")
-	perm_ht = WriteIt.file_to_ints_array("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{run}/Gen#{gen}_lists/gen_#{gen}_hm.txt")
+	perm_hm = WriteIt.file_to_ints_array("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/Perm_snps/perm_hm.txt")
+	perm_ht = WriteIt.file_to_ints_array("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/Perm_snps/perm_ht.txt")
 
 	perm_ratios = FitnessScore::ratio(perm_hm, perm_ht, div, genome_length) # Calculate homozygous/heterozygous ratio and make approximate distribution
 	perm_hyp = SNPdist.hyp_snps(perm_ratios, genome_length)
