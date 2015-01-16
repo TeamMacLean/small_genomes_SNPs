@@ -68,11 +68,15 @@ class Stuff
 			end 
 			if dic_ht.has_key?(frag)
 				dic_shuf_ht.store(frag, dic_ht[frag].to_f)
+			else 
+				dic_shuf_ht.store(frag, 0)
 			end 
 		end 
-		snps = []
-		dic_shuf_hm.each { |id, snp| snps << snp }
-		return dic_shuf_hm, dic_shuf_ht, snps
+		snps_hm = []
+		snps_ht = []
+		dic_shuf_hm.each { |id, snp| snps_hm << snp }
+		dic_shuf_ht.each { |id, snp| snps_ht << snp }
+		return dic_shuf_hm, dic_shuf_ht, snps_hm, snps_ht
 	end
 
 
