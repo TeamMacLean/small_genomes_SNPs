@@ -4,12 +4,19 @@ require_relative 'lib/locate_mutation'
 require_relative 'lib/snp_dist'
 require_relative 'lib/reform_ratio'
 require_relative 'lib/fitness_score'
+require 'csv'
 
 dataset = ARGV[0]
+perm_files = ARGV[1]
+
 n = 1048576*4
 
 genome_length = ReformRatio::genome_length("arabidopsis_datasets/#{dataset}/frags.fasta")
 div = 10000
+
+fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
+fasta = ReformRatio::fasta_array(fasta_file)
+contigs = fasta.length/2.to_i
 
 Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset}")) do
 	
@@ -22,8 +29,8 @@ Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset
 	peak =  LocateMutation.find_peak(hyp, n) # Find the peak in the approximated (hypothetical SNP) distribution
 	causal = LocateMutation.closest_snp(peak, hm)
 
-	perm_hm = WriteIt.file_to_ints_array("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/Perm_snps/perm_hm.txt")
-	perm_ht = WriteIt.file_to_ints_array("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/Perm_snps/perm_ht.txt")
+	perm_hm = WriteIt.file_to_ints_array("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{perm_files}/perm_hm.txt")
+	perm_ht = WriteIt.file_to_ints_array("/Users/morenop/small_genomes_SNPs/arabidopsis_datasets/#{dataset}/#{perm_files}/perm_ht.txt")
 
 	perm_ratios = FitnessScore::ratio(perm_hm, perm_ht, div, genome_length) # Calculate homozygous/heterozygous ratio and make approximate distribution
 	perm_hyp = SNPdist.hyp_snps(perm_ratios, genome_length)
@@ -34,4 +41,20 @@ Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset
 	puts "Location of causal mutation in correctly ordered genome: #{causal}"
 	puts "Candidate SNP position in permutation: #{candidate}"
 
-end
+	if candidate > causal 
+		normalised = candidate - causal
+	else
+		normalised = causal - candidate
+	end
+	
+	percent = (normalised*100)/genome_length.to_f
+
+	puts "Shift #{percent} %"
+
+	Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets")) do
+		CSV.open("mutation.csv", "ab") do |csv|
+			csv << ["#{genome_length}", "#{contigs}", "#{causal}", "#{candidate}", "#{percent}"]
+		end
+
+	end 
+end 

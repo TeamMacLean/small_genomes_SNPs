@@ -8,6 +8,8 @@ require 'pp'
 require 'pdist'
 
 dataset = ARGV[0] # Name of dataset directory in 'small_genomes_SNPs/arabidopsis_datasets'
+perm_files = ARGV[1]
+run = ARGV[2]
 
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
 fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
@@ -18,8 +20,6 @@ hm, ht = Stuff.snps_in_vcf(vcf_file)
 
 ##Create dictionaries with the id of the fragment as key and the NUMBER of SNP as value
 dic_hm, dic_ht = Stuff.dic_snps_fasta(hm, ht)
-
-
 
 ##Open the fasta file with the randomly ordered fragments and create an array with all the info there
 ##From the array take only the ids and put them in a new array
@@ -43,11 +43,7 @@ ids, lengths = ReformRatio.fasta_id_n_lengths(frags_shuffled)
 
 dic_shuf_hm, dic_shuf_ht, snps_hm, snps_ht = Stuff.define_snps(ids, dic_hm, dic_ht)
 
-
-
-dic_shuf_hm_norm = {}
-
-dic_shuf_ht_norm = {}
+dic_shuf_hm_norm, dic_shuf_ht_norm = {}, {}
 
 x = 0
 l = snps_hm.length
@@ -79,12 +75,13 @@ dic_hm_inv = dic_shuf_hm_norm.safe_invert
 
 dic_ht_inv = dic_shuf_ht_norm.safe_invert
 
+pp dic_ht_inv
+
 ##Iteration: look for the minimum value in the array of values, that will be 0 (fragments without SNPs) and put the fragments 
 #with this value in a list. Then, the list is cut by half and each half is added to a new array (right, that will be used 
 #to reconstruct the right side of the distribution, and left, for the left side)
 
-# puts dic_hm_inv
-# puts dic_ht_inv
+
 
 ###########Homozygous
 list1_hm = []
@@ -101,7 +98,8 @@ Array(1..length_hm/2).each do |i|
 	list1_hm.flatten!
 	keys_hm.delete(min1)
 	if list1_hm.length.to_i % 2 == 0 
-		d = length_hm/2.to_i
+		l = list1_hm.length
+		d = l/2.to_i
 		lu = list1_hm.each_slice(d).to_a
 		right_hm << lu[0]
 		left_hm << lu[1]
@@ -113,29 +111,27 @@ Array(1..length_hm/2).each do |i|
 	list2_hm << dic_hm_inv.values_at(min2)
 	list2_hm.flatten!
 	if list2_hm.length.to_i % 2 == 0
-		d = length_hm/2.to_i
+		l = list2_hm.length
+		d = l/2.to_i
 		lu = list2_hm.each_slice(d).to_a
 		right_hm << lu[0]
 		left_hm << lu[1]
 	else 
 		left_hm << list2_hm
 	end
-	list1_hm, list2_hm = [], []
+	list1_hm = []
+	list2_hm = []
 end
+ 
 
 right_hm = right_hm.flatten
-
-# pp "This is r #{right}"
 
 left_hm = left_hm.flatten.compact
 left_hm = left_hm.reverse #we need to reverse the left array to build the distribution properly
 
-# pp "This is l #{left}"
-puts left_hm.length
-
-
 perm_hm = right_hm << left_hm #combine together both sides of the distribution
 perm_hm.flatten!
+
 
 ###########Heterozygous
 
@@ -154,7 +150,8 @@ perm_hm.flatten!
 # 	list1_ht.flatten!
 # 	keys_ht.delete(min1)
 # 	if list1_ht.length.to_i % 2 == 0 
-# 		d = length_ht/2.to_i
+# 		l = list1_ht.length
+# 		d = l/2.to_i
 # 		lu = list1_ht.each_slice(d).to_a
 # 		right_ht << lu[0]
 # 		left_ht << lu[1]
@@ -166,7 +163,8 @@ perm_hm.flatten!
 # 	list2_ht << dic_ht_inv.values_at(min2)
 # 	list2_ht.flatten!
 # 	if list2_ht.length.to_i % 2 == 0
-# 		d = length_ht/2.to_i
+# 		l = list2_ht.length
+# 		d = l/2.to_i
 # 		lu = list2_ht.each_slice(d).to_a
 # 		right_ht << lu[0]
 # 		left_ht << lu[1]
@@ -180,18 +178,16 @@ perm_hm.flatten!
 # right_ht = right_ht.flatten
 
 # pp "This is r #{right_ht}"
-# puts right_ht.length
 
 # left_ht = left_ht.flatten.compact
 # left_ht = left_ht.reverse #we need to reverse the left array to build the distribution properly
 
 # pp "This is l #{left_ht}"
-# puts left_ht.length
-
 
 # perm_ht = right_ht << left_ht #combine together both sides of the distribution
 # perm_ht.flatten!
 
+# pp perm_ht
 
 # l = perm.length/10.to_i
 # q = l - 1
@@ -270,9 +266,9 @@ snp_data = ReformRatio.get_snp_data(vcf_file)
 
 het_snps, hom_snps = ReformRatio.perm_pos(frags_ordered, snp_data)
 
-Dir.mkdir("arabidopsis_datasets/#{dataset}/Perm_snps")
+Dir.mkdir("arabidopsis_datasets/#{dataset}/#{perm_files}")
 
-Dir.chdir("arabidopsis_datasets/#{dataset}/Perm_snps") do
-	WriteIt::write_txt("perm_hm", hom_snps) # save the SNP distributions for the best permutation in the generation
-	WriteIt::write_txt("perm_ht", het_snps)
+Dir.chdir("arabidopsis_datasets/#{dataset}/#{perm_files}") do
+	WriteIt::write_txt("perm#{run}_hm", hom_snps) # save the SNP distributions for the best permutation in the generation
+	WriteIt::write_txt("perm#{run}_ht", het_snps)
 end

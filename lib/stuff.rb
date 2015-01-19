@@ -1,7 +1,7 @@
 
 #encoding: utf-8
 require_relative 'reform_ratio'
-require 'Bio'
+require 'bio'
 
 ##Open the vcf file and create lists of heterozygous and homozygous SNPs
 
@@ -24,23 +24,6 @@ class Stuff
 		end
 		return hm, ht
 	end
-
-	# def self.take_ids_from_fasta(fasta_file)
-	# 	ids_s = [] 
-	# 	frags = []
-	# 	fasta_file = File.open(fasta_file)
-	# 	fasta_file.each do |line|
-	# 		frags << line
-	# 	end
-	# 	frags.each do |line|
-	# 		line = line.split(" ")
-	# 		id_only = line[0]
-	# 		if id_only.start_with?(">")
-	# 			ids_s << id_only
-	# 		end
-	# 	end
-	# 	return ids_s
-	# end
 
 	def self.dic_snps_fasta(hm, ht)
 		dic_hm = {}
