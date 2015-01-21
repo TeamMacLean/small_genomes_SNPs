@@ -9,7 +9,6 @@ require 'pdist'
 
 dataset = ARGV[0] # Name of dataset directory in 'small_genomes_SNPs/arabidopsis_datasets'
 perm_files = ARGV[1]
-run = ARGV[2]
 
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
 fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
@@ -75,13 +74,11 @@ dic_hm_inv = dic_shuf_hm_norm.safe_invert
 
 dic_ht_inv = dic_shuf_ht_norm.safe_invert
 
-pp dic_ht_inv
-
 ##Iteration: look for the minimum value in the array of values, that will be 0 (fragments without SNPs) and put the fragments 
 #with this value in a list. Then, the list is cut by half and each half is added to a new array (right, that will be used 
 #to reconstruct the right side of the distribution, and left, for the left side)
 
-
+pp dic_hm_inv
 
 ###########Homozygous
 list1_hm = []
@@ -103,8 +100,19 @@ Array(1..length_hm/2).each do |i|
 		lu = list1_hm.each_slice(d).to_a
 		right_hm << lu[0]
 		left_hm << lu[1]
-	else 
-		right_hm << list1_hm
+	else
+	 	if list1_hm.length.to_i > 2
+			object = list1_hm.shift
+			l = list1_hm.length
+			d = l/2.to_i
+			lu2 = list1_hm.each_slice(d).to_a
+			right_hm << lu2[0]
+			left_hm << lu2[1]
+			right_hm << object
+		else
+			right_hm << list1_hm 
+		end
+
 	end
 	min2 = keys_hm.min 
 	keys_hm.delete(min2)
@@ -117,7 +125,18 @@ Array(1..length_hm/2).each do |i|
 		right_hm << lu[0]
 		left_hm << lu[1]
 	else 
-		left_hm << list2_hm
+		if list2_hm.length.to_i > 2 
+			object = list2_hm.shift
+			l = list2_hm.length
+			d = l/2.to_i
+			lu2 = list2_hm.each_slice(d).to_a
+			right_hm << lu2[0]
+			left_hm << lu2[1]
+			left _hm << object
+		else
+			left_hm << list2_hm 
+		end
+
 	end
 	list1_hm = []
 	list2_hm = []
@@ -126,11 +145,22 @@ end
 
 right_hm = right_hm.flatten
 
+pp right_hm
+
+
 left_hm = left_hm.flatten.compact
 left_hm = left_hm.reverse #we need to reverse the left array to build the distribution properly
 
+pp left_hm
+puts left_hm.length 
+puts right_hm.length
+
 perm_hm = right_hm << left_hm #combine together both sides of the distribution
 perm_hm.flatten!
+
+# pp perm_hm 
+
+puts perm_hm.length
 
 
 ###########Heterozygous
@@ -269,6 +299,6 @@ het_snps, hom_snps = ReformRatio.perm_pos(frags_ordered, snp_data)
 Dir.mkdir("arabidopsis_datasets/#{dataset}/#{perm_files}")
 
 Dir.chdir("arabidopsis_datasets/#{dataset}/#{perm_files}") do
-	WriteIt::write_txt("perm#{run}_hm", hom_snps) # save the SNP distributions for the best permutation in the generation
-	WriteIt::write_txt("perm#{run}_ht", het_snps)
+	WriteIt::write_txt("perm_hm", hom_snps) # save the SNP distributions for the best permutation in the generation
+	WriteIt::write_txt("perm_ht", het_snps)
 end
