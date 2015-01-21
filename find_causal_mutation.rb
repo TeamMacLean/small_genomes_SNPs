@@ -16,7 +16,7 @@ div = 10000
 
 fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
 fasta = ReformRatio::fasta_array(fasta_file)
-contigs = fasta.length/2.to_i
+contigs = fasta.length.to_i
 
 Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset}")) do
 	
