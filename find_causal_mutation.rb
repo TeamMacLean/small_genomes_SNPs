@@ -52,7 +52,7 @@ Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset
 	puts "Shift #{percent} %"
 
 	Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets")) do
-		CSV.open("mutation.csv", "ab") do |csv|
+		CSV.open("mutation_new.csv", "ab") do |csv|
 			csv << ["#{genome_length}", "#{contigs}", "#{causal}", "#{candidate}", "#{percent}"]
 		end
 

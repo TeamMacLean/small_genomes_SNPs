@@ -48,7 +48,7 @@ class Measure
 			else
 				distance = (2.0 / ((n ** 2) - 1).to_f) * s
 			end
-			puts "The normalized deviation distance is #{distance}" # if/else block normalizes the deviation distance
+			return distance # if/else block normalizes the deviation distance
 		end
 	end
 end 
