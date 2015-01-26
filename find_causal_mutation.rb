@@ -41,11 +41,8 @@ Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset
 	puts "Location of causal mutation in correctly ordered genome: #{causal}"
 	puts "Candidate SNP position in permutation: #{candidate}"
 
-	if candidate > causal 
-		normalised = candidate - causal
-	else
-		normalised = causal - candidate
-	end
+
+	normalised = (candidate - causal).abs
 	
 	percent = (normalised*100)/genome_length.to_f
 

@@ -226,7 +226,7 @@ class GATOC # Genetic Algorithm To Order Contigs
 			ht, hm = ReformRatio.perm_pos(pop_fits[-1][1], snp_data) # get the SNP distributions for the best permutation in the generation
 
 			puts "This is snp_data #{snp_data}"
-
+			puts "this is pop_fits #{pop_fits[-1][1]}"
 
 			unless opts[:start_pop] != nil && gen == opts[:start_gen] # if using a starting population, we don't want to overwite files for that generation
 				Dir.mkdir(File.join(Dir.home, "#{opts[:loc]}/#{opts[:dataset]}/#{opts[:run]}/Gen#{gen}_lists"))

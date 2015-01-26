@@ -17,24 +17,20 @@ fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
 fasta_shuffle = "arabidopsis_datasets/#{dataset}/frags_shuffled.fasta"
 ############
 
-##Open the vcf file and create lists of heterozygous and homozygous SNPs
+##Lists of SNPs
 hm, ht = Stuff.snps_in_vcf(vcf_file)
 
-##Create dictionaries with the id of the fragment as key and the NUMBER of SNP as value
-dic_hm, dic_ht = Stuff.dic_snps_fasta(hm, ht)
+pp "this is hm #{hm}"
 
-##Open the fasta file with the randomly ordered fragments and create an array with all the info there
-##From the array take only the ids and put them in a new array
-frags = []
-fasta_file = File.open(fasta_shuffle)
-fasta_file.each do |line|
-	frags << line
-end
+##Create dictionaries with the id of the fragment as key and the NUMBER of SNP as value
+dic_hm, dic_ht = Stuff.create_hash_snps(hm, ht)
+
+pp dic_hm
 
 ##Open the fasta file with the randomly ordered fragments  and create an array with all the information
 frags_shuffled = ReformRatio.fasta_array(fasta_shuffle)
 
-##From the previous array take only the ids and put them in a new array
+##From the previous array take ids and lengths and put them in 2 new arrays
 ids, lengths = ReformRatio.fasta_id_n_lengths(frags_shuffled)
 
 ##Assign the number of SNPs to each fragment in the shuffled list. 
@@ -42,7 +38,19 @@ ids, lengths = ReformRatio.fasta_id_n_lengths(frags_shuffled)
 
 dic_shuf_hm, dic_shuf_ht, snps_hm, snps_ht = Stuff.define_snps(ids, dic_hm, dic_ht)
 
-dic_hm_inv, dic_ht_inv = Stuff.normalise_by_length(dic_shuf_hm, dic_shuf_ht, snps_hm, snps_ht)
+pp snps_hm
+
+dic_shuf_hm_norm, dic_shuf_ht_norm = Stuff.normalise_by_length(dic_shuf_hm, dic_shuf_ht, snps_hm, snps_ht, lengths)
+
+class Hash
+  def safe_invert
+    self.each_with_object( {} ) { |(key, value), out| ( out[value] ||= [] ) << key }
+  end
+end
+
+dic_hm_inv = dic_shuf_hm_norm.safe_invert
+
+dic_ht_inv = dic_shuf_ht_norm.safe_invert
 
 ##Iteration: look for the minimum value in the array of values, that will be 0 (fragments without SNPs) and put the fragments 
 #with this value in a list. Then, the list is cut by half and each half is added to a new array (right, that will be used 
@@ -51,7 +59,9 @@ perm_hm = SDM.sorting(dic_hm_inv)
 
 ##Take IDs, lenght and sequence from the shuffled fasta file and add them to the permutation array 
 
-fasta_perm = Stuff.create_perm_fasta(perm_hm, frags_shuffled)
+fasta_perm = Stuff.create_perm_fasta(perm_hm, frags_shuffled, ids)
+
+pp fasta_perm
 
 ##Create new fasta file with the ordered elements
 File.open("arabidopsis_datasets/#{dataset}/frags_ordered.fasta", "w+") do |f|

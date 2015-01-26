@@ -2,31 +2,22 @@
 
 class SDM
 	def self.sorting(dic_hm_inv)
-		list1_hm = []
-		list2_hm = []
-		left_hm = []
-		right_hm = []
-
+		list1_hm, list2_hm, left_hm, right_hm = [], [], [], []
 		keys_hm = dic_hm_inv.keys.to_a
-		length_hm = keys_hm.length
-
-		Array(1..length_hm/2).each do |i|
+		
+		Array(1..keys_hm.length/2).each do |i|
 			min1 = keys_hm.min 
 			list1_hm << dic_hm_inv.values_at(min1)
 			list1_hm.flatten!
 			keys_hm.delete(min1)
 			if list1_hm.length.to_i % 2 == 0 
-				l = list1_hm.length
-				d = l/2.to_i
-				lu = list1_hm.each_slice(d).to_a
+				lu = list1_hm.each_slice(list1_hm.length/2.to_i).to_a
 				right_hm << lu[0]
 				left_hm << lu[1]
 			else
 			 	if list1_hm.length.to_i > 2
 					object = list1_hm.shift
-					l = list1_hm.length
-					d = l/2.to_i
-					lu2 = list1_hm.each_slice(d).to_a
+					lu2 = list1_hm.each_slice(list1_hm.length/2.to_i).to_a
 					right_hm << lu2[0]
 					left_hm << lu2[1]
 					right_hm << object
@@ -40,17 +31,13 @@ class SDM
 			list2_hm << dic_hm_inv.values_at(min2)
 			list2_hm.flatten!
 			if list2_hm.length.to_i % 2 == 0
-				l = list2_hm.length
-				d = l/2.to_i
-				lu = list2_hm.each_slice(d).to_a
+				lu = list2_hm.each_slice(list2_hm.length/2.to_i).to_a
 				right_hm << lu[0]
 				left_hm << lu[1]
 			else 
 				if list2_hm.length.to_i > 2 
 					object = list2_hm.shift
-					l = list2_hm.length
-					d = l/2.to_i
-					lu2 = list2_hm.each_slice(d).to_a
+					lu2 = list2_hm.each_slice(list2_hm.length/2.to_i).to_a
 					right_hm << lu2[0]
 					left_hm << lu2[1]
 					left _hm << object
@@ -63,10 +50,7 @@ class SDM
 			list2_hm = []
 		end
 		 
-
 		right_hm = right_hm.flatten
-
-
 		left_hm = left_hm.flatten.compact
 		left_hm = left_hm.reverse #we need to reverse the left array to build the distribution properly
 		perm_hm = right_hm << left_hm #combine together both sides of the distribution
