@@ -12,11 +12,11 @@ perm_files = ARGV[1]
 n = 1048576*4
 
 genome_length = ReformRatio::genome_length("arabidopsis_datasets/#{dataset}/frags.fasta")
-div = 10000
+div = 10
 
 fasta_file = "arabidopsis_datasets/#{dataset}/frags.fasta"
 fasta = ReformRatio::fasta_array(fasta_file)
-contigs = fasta.length.to_i
+# contigs = fasta.length.to_i
 
 Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset}")) do
 	
@@ -50,7 +50,7 @@ Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset
 
 	Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets")) do
 		CSV.open("mutation_new.csv", "ab") do |csv|
-			csv << ["#{genome_length}", "#{contigs}", "#{causal}", "#{candidate}", "#{percent}"]
+			csv << ["#{genome_length}", "#{causal}", "#{candidate}", "#{percent}"]
 		end
 
 	end 
