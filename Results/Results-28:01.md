@@ -29,7 +29,7 @@ Results 28/01
 
 ![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots-30Mb-1500%20contigs-centre.png?raw=true)
 
-####What happens if the mutation is at the beginning or the end of the model genome? 
+####What happens if the mutation is not located in the centre of the model genome? 
 
 <table>
 
@@ -45,7 +45,8 @@ Results 28/01
 <tr><th> 13 <th>16.62  </th> 
 <tr><th> 15 <th> 16.98 </th>
 <tr><th> 30 <th> 15.81 </th>
-
- 
     </table>
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots-30Mb-left.png?raw=true)
+![Image](https://github.com/pilarcormo/small_genomes_SNPs/blob/master/Results/Rplots-30Mb-right.png?raw=true)
+
 
