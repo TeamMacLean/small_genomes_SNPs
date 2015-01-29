@@ -124,6 +124,13 @@ class Stuff
 		end	
 		return fasta_perm
 	end 
+	
+	def self.top_and_tail(original, perm)
+		original.delete(perm.shift)
+		original.delete(perm.pop)
+		return original, perm
+	end
+
 
 	##
 

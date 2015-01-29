@@ -3,13 +3,18 @@
 require_relative 'lib/reform_ratio'
 require_relative 'lib/write_it'
 require_relative 'lib/stuff'
+require_relative 'lib/mutation'
 require_relative 'lib/SDM'
+
 require 'Bio'
 require 'pp'
 require 'pdist'
+require 'csv'
 
 dataset = ARGV[0] # Name of dataset directory in 'small_genomes_SNPs/arabidopsis_datasets'
 perm_files = ARGV[1]
+# frags_ordered = ARGV[2]
+i = ARGV[2].to_i 
 
 ######Files
 vcf_file = "arabidopsis_datasets/#{dataset}/snps.vcf"
@@ -28,6 +33,8 @@ frags_shuffled = ReformRatio.fasta_array(fasta_shuffle)
 
 ##From the previous array take ids and lengths and put them in 2 new arrays
 ids, lengths = ReformRatio.fasta_id_n_lengths(frags_shuffled)
+genome_length = ReformRatio.genome_length(fasta_file).to_i 
+
 
 ##Assign the number of SNPs to each fragment in the shuffled list. 
 ##If a fragment does not have SNPs, the value assigned will be 0.
@@ -46,10 +53,14 @@ dic_hm_inv = dic_shuf_hm_norm.safe_invert
 
 dic_ht_inv = dic_shuf_ht_norm.safe_invert
 
+# pp dic_hm_inv
+
 ##Iteration: look for the minimum value in the array of values, that will be 0 (fragments without SNPs) and put the fragments 
 #with this value in a list. Then, the list is cut by half and each half is added to a new array (right, that will be used 
 #to reconstruct the right side of the distribution, and left, for the left side)
 perm_hm = SDM.sorting(dic_hm_inv)
+# measure = Measure.distance(ids, perm_hm)
+# puts measure 
 
 ##Take IDs, lenght and sequence from the shuffled fasta file and add them to the permutation array 
 
@@ -68,6 +79,29 @@ frags_ordered = ReformRatio.fasta_array(fasta_ordered)
 snp_data = ReformRatio.get_snp_data(vcf_file)
 
 het_snps, hom_snps = ReformRatio.perm_pos(frags_ordered, snp_data)
+
+# puts hm
+# puts ht
+# puts hom_snps
+# puts het_snps
+
+Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset}")) do
+	hm_list = WriteIt.file_to_ints_array("hm_snps.txt") # Get SNP distributions
+	ht_list = WriteIt.file_to_ints_array("ht_snps.txt")
+	mutation = Mutation.define(hm_list, ht_list, hom_snps, het_snps) 
+	if mutation > 1
+		i.times do 
+			perm, original =  Stuff.top_and_tail(ids, fasta_perm)
+			het_snps, hom_snps = ReformRatio.perm_pos(frags_ordered, snp_data)
+			mutation = Mutation.define(hm_list, ht_list, hom_snps, het_snps) 
+			CSV.open("top_and_tail.csv", "ab") do |csv|
+				csv << [i, mutation]
+			end
+		end
+	end
+
+end 
+
 
 Dir.mkdir("arabidopsis_datasets/#{dataset}/#{perm_files}")
 
