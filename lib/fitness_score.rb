@@ -30,10 +30,12 @@ class FitnessScore
 		def self.ratio(hm, ht, div, genome_length)
 			hm_count = FitnessScore::count(hm, div, genome_length)
 			ht_count = FitnessScore::count(ht, div, genome_length)
+			pp hm_count
+			pp ht_count
 			x = 0
 			ratios = []
 			div.times do
-				count_ratio = ((hm_count[x] + 1).to_f / (ht_count[x] + 1).to_f) # a measure of ratio
+				count_ratio = ((hm_count[x]).to_f / (ht_count[x]).to_f) # a measure of ratio
 				ratios << count_ratio
 				x+=1
 			end

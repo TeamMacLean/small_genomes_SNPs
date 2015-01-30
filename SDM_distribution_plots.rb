@@ -3,10 +3,11 @@ require_relative 'lib/reform_ratio'
 require_relative 'lib/write_it'
 require_relative 'lib/snp_dist'
 require_relative 'lib/fitness_score'
+require 'pp'
 
 dataset = ARGV[0]
 perm = ARGV[1]
-div = 1
+div = 1000
 
 genome_length = ReformRatio::genome_length("arabidopsis_datasets/#{dataset}/frags.fasta")
 
@@ -16,16 +17,17 @@ Dir.chdir(File.join(Dir.home, "small_genomes_SNPs/arabidopsis_datasets/#{dataset
 	
 	hom_snps = WriteIt.file_to_ints_array("hm_snps.txt")
 	hm << hom_snps
-	ylim_hm << SNPdist.get_ylim(hom_snps, genome_length, 'density')
+	ylim_hm << SNPdist.get_ylim(hom_snps, genome_length)
 
 	het_snps = WriteIt.file_to_ints_array("ht_snps.txt")
 	ht << het_snps
-	ylim_ht << SNPdist.get_ylim(het_snps, genome_length, 'density')
+	ylim_ht << SNPdist.get_ylim(het_snps, genome_length)
 
 	expected_ratio = FitnessScore::ratio(hom_snps, het_snps, div, genome_length)
 	hyp_snps = SNPdist.hyp_snps(expected_ratio, genome_length)
 	hyp << hyp_snps
-	ylim_hyp << SNPdist.get_ylim(hyp_snps, genome_length, 'density')
+	ylim_hyp << SNPdist.get_ylim(hyp_snps, genome_length)
+	pp ylim_hyp
 
 end
 

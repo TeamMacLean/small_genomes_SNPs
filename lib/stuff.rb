@@ -73,7 +73,8 @@ class Stuff
 
 	##Inputs: hashes with IDs as keys and the SNP density as values
 
-	def self.normalise_by_length(shuf_hm, shuf_ht, snps_hm, snps_ht, lengths)
+	def self.normalise_by_length(ids, hm, ht, lengths)
+		shuf_hm, shuf_ht, snps_hm, snps_ht = Stuff.define_snps(ids, hm, ht) 
 		shuf_hm_norm, shuf_ht_norm = {}, {}
 		x = 0
 		l = snps_hm.length
