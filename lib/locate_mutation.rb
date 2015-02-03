@@ -18,6 +18,8 @@ class LocateMutation
 		return peak
 	end
 
+	
+
 	# Input 0: Value under distribution peak (genome position as a float)
 	# Input 1: List of homozygous SNP positions
 	# Output: The closest homozygous SNP to the peak

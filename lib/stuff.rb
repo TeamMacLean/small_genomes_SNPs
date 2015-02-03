@@ -108,6 +108,8 @@ class Stuff
 			data_p << data[index_frag]
 		end 
 
+		pp defs_p
+
 		###Create fasta array with the information above 
 		fasta_perm = []
 		x = 0

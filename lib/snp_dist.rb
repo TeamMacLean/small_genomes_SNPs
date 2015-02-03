@@ -13,6 +13,7 @@ class SNPdist
 		(1..ratios.length).to_a.each do |i|
 			breaks << (genome_length/ratios.length.to_f)*i
 		end
+		# pp "This are breaks #{breaks}"
 		hyp, x = [], 0
 		ratios.each do |ratio| 
 			(ratio*10).to_i.times do
@@ -20,6 +21,7 @@ class SNPdist
 			end
 			x+=1
 		end
+		# pp "hyp hyp #{hyp}"
 		return hyp # These don't need to be unique or integers like the real SNPs, since they are just representing a distribution
 	end
 
@@ -35,8 +37,6 @@ class SNPdist
 		myr.assign 'genome_length', genome_length
 		if plot_type == 'density'
 			myr.eval 'plot((1:512)*(genome_length/512), density(array)$y)'
-		elsif plot_type == 'ratio'
-			myr.eval 'plot((1:length(array))*(genome_length/length(array)), array)'
 		end
 		ylim = myr.pull 'par("yaxp")[2] + par("yaxp")[2]/par("yaxp")[3]'
 		myr.quit
