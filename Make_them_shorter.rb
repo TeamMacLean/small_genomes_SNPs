@@ -18,10 +18,8 @@ class Measure
 			right = (length-1) - i
 			o = original[left..right]
 			p = perm[left..right]
-			puts "This is the original perm:" 
-			puts o.to_json
-			puts "This is the permutation:" 
-			puts p.to_json
+			# puts "This is the original perm:" 
+			# puts "This is the permutation:" 
 			i+=1
 			indices = []
 			indices_o = []
@@ -40,7 +38,7 @@ class Measure
 			absolute = difference.map! {|i| i.abs } # the deviation's, as absolute values (direction does not matter)
 			# puts "The absolute difference is #{difference}"
 			suma = absolute.inject(:+)
-			puts "Addition is #{suma}"
+			# puts "Addition is #{suma}"
 			s = suma
 			n = p.length
 			if n % 2 == 0 
@@ -48,7 +46,8 @@ class Measure
 			else
 				distance = (2.0 / ((n ** 2) - 1).to_f) * s
 			end
-			return distance # if/else block normalizes the deviation distance
+			dist << distance  
+			return dist # if/else block normalizes the deviation distance
 		end
 	end
 end 

@@ -9,15 +9,15 @@ size = ARGV[1].to_i
 contig_size = ARGV[2].to_i
 i = ARGV[3].to_i
 
-snp = (size/1000)/2
+
 
 
 # make the directory to put data files into
 Dir.mkdir(File.join(Dir.home, "/small_genomes_SNPs/arabidopsis_datasets/#{name}"))
 
 # Create the lists of homozygous and heterozygous SNPs
-hm_r = "hm <- rnorm(#{snp}, #{size}/#{i}, #{snp*2})" # Causative SNP at/near 10000
-ht_r = "ht <- runif(#{snp}, 1, #{size})"   # Genome length of 10000
+hm_r = "hm <- rnorm(50, #{i}, 100)" # Causative SNP at/near 10000
+ht_r = "ht <- runif(50, 1, #{size})"   # Genome length of 10000
 hm, ht = ModelGenome::get_snps(hm_r, ht_r)
 snp_pos = [hm, ht].flatten
 
