@@ -108,8 +108,6 @@ class Stuff
 			data_p << data[index_frag]
 		end 
 
-		pp defs_p
-
 		###Create fasta array with the information above 
 		fasta_perm = []
 		x = 0
@@ -127,12 +125,31 @@ class Stuff
 		end	
 		return fasta_perm
 	end 
+
+	def self.positions_by_fragment(dic, snp_list)
+		dic.each do |id, number| 
+			if number.to_i > 0 
+				dic.store(id, snp_list[0..(number.to_i-1)])
+				(number.to_i).times do
+		    		snp_list.delete_at(0)
+				end
+			end
+		end
+		return dic 
+	end
+
+
+
+
+
+
 	
 	def self.top_and_tail(original, perm)
 		original.delete(perm.shift)
 		original.delete(perm.pop)
 		return original, perm
 	end
+
 
 
 	##
