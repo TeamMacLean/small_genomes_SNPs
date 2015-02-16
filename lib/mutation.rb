@@ -10,9 +10,11 @@ class Mutation
 	def self.define(hm, ht, perm_hm, perm_ht, genome_length, ratios, expected_ratios) 
 		div = 100
 		n = 1048576*4
-		hyp = SNPdist.hyp_snps(ratios, genome_length)
+		# hyp = SNPdist.hyp_snps(ratios, genome_length)
+		# puts hyp.length
+		
 
-		peak =  LocateMutation.find_peak(hyp, n) # Find the peak in the approximated (hypothetical SNP) distribution
+		peak =  LocateMutation.find_peak(hm, n) # Find the peak in the approximated (hypothetical SNP) distribution
  
 		causal = LocateMutation.closest_snp(peak, hm)
 
@@ -32,10 +34,10 @@ class Mutation
 		# 	end 
 		# end
 
-		perm_hyp = SNPdist.hyp_snps(expected_ratios, genome_length)
+		# perm_hyp = SNPdist.hyp_snps(expected_ratios, genome_length)
 
 
-		perm_peak = LocateMutation.find_peak(perm_hyp, n)
+		perm_peak = LocateMutation.find_peak(perm_hm, n)
 		candidate = LocateMutation.closest_snp(perm_peak, perm_hm)
 
 		puts "Location of causal mutation in correctly ordered genome: #{causal}"

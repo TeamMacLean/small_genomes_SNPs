@@ -7,7 +7,7 @@ require 'pp'
 
 dataset = ARGV[0]
 perm = ARGV[1]
-div = 100
+div = 10
 
 genome_length = ReformRatio.genome_length("arabidopsis_datasets/#{dataset}/frags.fasta")
 
